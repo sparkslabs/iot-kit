@@ -1,0 +1,15 @@
+Source: python-iotoy
+Maintainer: Michael Sparks <sparks.m@gmail.com>
+Section: python
+Priority: optional
+Build-Depends: python-all (>= 2.6.6-3), debhelper (>= 7)
+Standards-Version: 3.9.1
+
+Package: python-iotoy
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: python-iotoy
+ .
+ A collection of tools for building an Internet of Toys. This is the python
+ portion of the code stack.
+ .
