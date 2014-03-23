@@ -83,6 +83,5 @@ Original implementations ©copyright 2013 BBC.
 Michael Sparks
 
 twitter: @sparks_rd
-website: http://www.sparkslabs.com/michael/
+Website: http://www.sparkslabs.com/michael/
 email: sparks DOT m AT gmail
-
