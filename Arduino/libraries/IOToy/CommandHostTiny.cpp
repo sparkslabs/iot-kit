@@ -23,13 +23,15 @@ public:
   CommandHost() : have_line(false), line_length(0) {}
   ~CommandHost() {}
 
+  virtual const char *hostid() { return "generic_1"; }
   virtual const char *help(char * name) { return ""; }
   virtual const char * attrs() { return ""; }
   virtual const char * funcs() { return ""; }
   virtual bool exists(char * attribute) { return false; }
-  virtual bool has_help(char * name) { Serial.println("Bollocks"); Serial.println(name); Serial.println("Balls");return false; }
+  virtual bool has_help(char * name) { Serial.println(name); return false; }
   virtual const char *get(char * attribute) { return "-"; }
   virtual int set(char* attribute, char* raw_value) { return 404; }
+  virtual int callfunc(char* funcname, char* raw_args) { return 404; }
 
   char * consume_token(char * command_line) {
     // Modifies the buffer in place - replacing spaces with nulls each time it's called.
@@ -85,7 +87,8 @@ public:
         Serial.print(",");
         Serial.print(result);
         Serial.println();
-      } else{
+      }
+      else{
         Serial.println();
       }
       return;
@@ -109,10 +112,10 @@ public:
           const char * value = help(args);
           Serial.print(F("200:Help found:"));
           Serial.println(value);
-        } else {
+        }
+        else {
           Serial.print(F("404:No help found:"));
           Serial.println(args);
-
         }
         return;
       }
@@ -124,11 +127,11 @@ public:
         }
         if (exists(args)) {
           const char * value = get(args);
-          send_response(200, (char*)"Found", (char*)value);
-//          Serial.print("200:Found:");
-//          Serial.println(value);
-        } else {
-          Serial.println("404:Attribute Not Found:-");
+          Serial.print(F("200:Found:"));
+          Serial.println(value);
+        } 
+        else {
+          Serial.println(F("404:Attribute Not Found:-"));
         }
         return;
       }
@@ -142,14 +145,34 @@ public:
           Serial.println(value);
           int result = set(attribute, value); // Intended to be overridden, must provide a way to describe failure...
           if (result == 200) {
-            Serial.println("200:Success:-");
+            Serial.println(F("200:Success:-"));
             return;
           }
           if (result == 404) {
-            Serial.println("404:Attribute Not Found:-");
+            Serial.println(F("404:Attribute Not Found:-"));
             return;
           }
           return;
+        }
+
+      if (strcmp(command,"do") == 0) {
+        char * funcname= args;
+        char * value = consume_token(args);
+        Serial.print("Funcname:");
+        Serial.println(funcname);
+        Serial.print("Value:");
+        Serial.println(value);
+        int result = callfunc(funcname, value); // Intended to be overridden, must provide a way to describe failure...
+        if (result == 200) {
+          Serial.println(F("200:Success:-"));
+          return;
+        }
+        if (result == 404) {
+          Serial.println(F("404:funcname Not Found:-"));
+          return;
+        }
+        return;
+
       }
     }
   }
@@ -159,6 +182,18 @@ public:
     // Would enable the thing to run more or less independently of the command host...
     // Mind you, max data rate is about a character per millisecond, so maybe just "nice"
     interpret_line();
+  }
+
+  virtual void setup() {
+      Serial.begin(9600);    // Data rate should be configurable
+      while (!Serial) {
+        ; // wait for serial port to connect. Needed for Leonardo only
+      }
+      Serial.print("DEV ");
+      Serial.print( hostid()); // Name of the device. May or may note be used on the network verbatim
+      Serial.print(" "); 
+      // Ideally also want a sufficiently unique id here.
+      Serial.println("OK");
   }
 };
 

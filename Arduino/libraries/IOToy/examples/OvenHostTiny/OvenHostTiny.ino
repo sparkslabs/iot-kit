@@ -1,14 +1,6 @@
-// This next part should be ifdef'd appropriately
+// Oven Spike for constrained devices
 
-//  #include "Servo.h"
-
-#ifdef LOCALTEST
-#include "../test_support/MockServo.h"
-#else
-#include "Servo.h"
-#endif
-
-#include "../CommandHostTiny.cpp"
+#include <CommandHostTiny.cpp>
 
 class OvenHost : public CommandHost {
 private:
@@ -66,32 +58,17 @@ public:
 };
 
 OvenHost MyCommandHost;
-// Servo myservo1;  // create servo object to control a servo 
-// Servo myservo2;  // create servo object to control a servo 
-// Servo myservo3;  // create servo object to control a servo 
-
-// int potpin = 0;  // analog pin used to connect the potentiometer
-// int val;    // variable to read the value from the analog pin 
 
 void setup() {
   Serial.begin(9600);
 
   Serial.print("DEVICE ");
-  Serial.print("OVEN "); // Name of the device. May or may note be used on the network verbatim.
-  // Do I want some sort of Mac Address here? If so, how? How to make unique to the device?
-  // Or /sufficiently/ unique?
+  Serial.print("OVEN ");
   Serial.println("OK");
-//   myservo1.attach(9);  // attaches the servo on pin 9 to the servo object 
-//   myservo2.attach(10);  // attaches the servo on pin 9 to the servo object 
-//   myservo3.attach(11);  // attaches the servo on pin 9 to the servo object 
 
 }
 
 void loop() {
   MyCommandHost.run_host();
-//   val = analogRead(potpin);            // reads the value of the potentiometer (value between 0 and 1023) 
-//   val = map(val, 0, 1023, 0, 179);     // scale it to use it with the servo (value between 0 and 180) 
-//  myservo1.write(val);                  // sets the servo position according to the scaled value 
-//  delay(15);                           // waits for the servo to get there 
 }
 

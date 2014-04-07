@@ -1,5 +1,6 @@
+// Oven Spike for non-constrained devices
 
-#include "../CommandHostCore.cpp"
+#include <CommandHostCore.cpp>
 
 class OvenHost : public CommandHost {
 private:

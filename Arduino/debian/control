@@ -1,0 +1,14 @@
+Source: arduino-iotoy
+Section: electronics
+Priority: extra
+Maintainer: Michael <sparks.m@gmail.com>
+Build-Depends: debhelper (>= 8)
+Standards-Version: 3.9.3
+Homepage: http://www.sparkslabs.com/
+
+Package: arduino-iotoy
+Architecture: all
+Depends: ${misc:Depends}, arduino-core
+Suggests: arduino
+Description: Extra libraries and examples for the arduino codebase.
+
