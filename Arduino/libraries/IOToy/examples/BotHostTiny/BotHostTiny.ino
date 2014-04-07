@@ -1,6 +1,6 @@
 // Robot Spoke for a constrained device
 
-#include <CommandHostTiny.cpp>
+#include <CommandHostTiny.h>
 
 const int LEFT_MOTOR_DIR_PIN = 7;
 const int LEFT_MOTOR_PWM_PIN = 9;
@@ -13,7 +13,7 @@ const int DRIVE_FORWARD_TIME_MS = 1500;
 const int TURN_TIME_MS = 2000;
 
 
-class BotHost : public CommandHost {
+class BotHost : public CommandHostTiny {
 private:
   int drive_forward_time_ms; // Forward distance
   int turn_time_ms; // 
@@ -135,7 +135,7 @@ public:
 
   void setup(void) {
       // Setup the pins
-      CommandHost::setup();
+      CommandHostTiny::setup();
 
       pinMode( LEFT_MOTOR_DIR_PIN, OUTPUT );
       pinMode( LEFT_MOTOR_PWM_PIN, OUTPUT );

@@ -1,39 +1,28 @@
-// Source code library, to enable clear split between user code and application code.
 
-#ifndef IOTOY_COMMANDHOST_TINY_CPP
-#define IOTOY_COMMANDHOST_TINY_CPP
+#include "CommandHostTiny.h"
+#include <Arduino.h>
 
-// The serial lines commented out below are commented out primarily because they
-// have been found to use more memory that their alternatives.
+void CommandHostTiny::send_response(int status_code, char* message, char* result) {
+    Serial.print(status_code);
+    Serial.print(":");
+    Serial.print(message);
+    Serial.print(":");
+    Serial.print(result);
+    Serial.println();
+}
 
-class CommandHost {
-  int line_length;
-  bool have_line;
-  char serial_buffer[141];
-  void send_response(int status_code, char* message, char* result) {
-      Serial.print(status_code);
-      Serial.print(":");
-      Serial.print(message);
-      Serial.print(":");
-      Serial.print(result);
-      Serial.println();
-  }
 
-public:
-  CommandHost() : have_line(false), line_length(0) {}
-  ~CommandHost() {}
+  const char * CommandHostTiny::hostid() { return "generic_1"; }
+  const char * CommandHostTiny::help(char * name) { return ""; }
+  const char * CommandHostTiny::attrs() { return ""; }
+  const char * CommandHostTiny::funcs() { return ""; }
+  bool CommandHostTiny::exists(char * attribute) { return false; }
+  bool CommandHostTiny::has_help(char * name) { Serial.println(name); return false; }
+  const char * CommandHostTiny::get(char * attribute) { return "-"; }
+  int CommandHostTiny::set(char* attribute, char* raw_value) { return 404; }
+  int CommandHostTiny::callfunc(char* funcname, char* raw_args) { return 404; }
 
-  virtual const char *hostid() { return "generic_1"; }
-  virtual const char *help(char * name) { return ""; }
-  virtual const char * attrs() { return ""; }
-  virtual const char * funcs() { return ""; }
-  virtual bool exists(char * attribute) { return false; }
-  virtual bool has_help(char * name) { Serial.println(name); return false; }
-  virtual const char *get(char * attribute) { return "-"; }
-  virtual int set(char* attribute, char* raw_value) { return 404; }
-  virtual int callfunc(char* funcname, char* raw_args) { return 404; }
-
-  char * consume_token(char * command_line) {
+  char * CommandHostTiny::consume_token(char * command_line) {
     // Modifies the buffer in place - replacing spaces with nulls each time it's called.
     // This turns out to be a very safe strategy for what we need
     char * string_boundary = strstr(command_line, " ");
@@ -42,7 +31,7 @@ public:
     return string_boundary;
   }
 
-  void buffer_serial() {
+  void CommandHostTiny::buffer_serial() {
     while (Serial.available() >0) {
       char next_char = Serial.read();
       if (line_length <140) {
@@ -60,7 +49,7 @@ public:
     have_line = false;
   }
 
-  void interpret_line() {
+  void CommandHostTiny::interpret_line() {
     char command_line[140];
     if (!have_line) { return; }
 
@@ -177,24 +166,18 @@ public:
     }
   }
 
-  void run_host() {
+  void CommandHostTiny::run_host() {
     buffer_serial(); // Would be nice to have this with a timeout!
     // Would enable the thing to run more or less independently of the command host...
     // Mind you, max data rate is about a character per millisecond, so maybe just "nice"
     interpret_line();
   }
 
-  virtual void setup() {
+  void CommandHostTiny::setup() {
       Serial.begin(9600);    // Data rate should be configurable
-      while (!Serial) {
-        ; // wait for serial port to connect. Needed for Leonardo only
-      }
       Serial.print("DEV ");
       Serial.print( hostid()); // Name of the device. May or may note be used on the network verbatim
       Serial.print(" "); 
       // Ideally also want a sufficiently unique id here.
       Serial.println("OK");
   }
-};
-
-#endif

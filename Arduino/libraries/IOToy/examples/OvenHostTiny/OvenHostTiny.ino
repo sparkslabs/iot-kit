@@ -1,8 +1,8 @@
 // Oven Spike for constrained devices
 
-#include <CommandHostTiny.cpp>
+#include <CommandHostTiny.h>
 
-class OvenHost : public CommandHost {
+class OvenHost : public CommandHostTiny {
 private:
   int temperature;
   int target_temperature;
