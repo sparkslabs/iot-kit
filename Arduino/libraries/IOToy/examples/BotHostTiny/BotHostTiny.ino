@@ -92,6 +92,16 @@ public:
     }
     return 404; 
   }
+  int do_command(char* funcname) { 
+    if (strcmp(funcname,"boing")==0) {
+      forward();
+      backward();
+      left();
+      right();
+      return 200;
+    }
+    return 404; 
+  }
   void stop(void) {
     analogWrite( LEFT_MOTOR_PWM_PIN, 0 );
     analogWrite( RIGHT_MOTOR_PWM_PIN, 0 );

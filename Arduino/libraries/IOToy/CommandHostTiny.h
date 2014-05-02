@@ -22,6 +22,7 @@ public:
   virtual const char *get(char * attribute);
   virtual int set(char* attribute, char* raw_value);
   virtual int callfunc(char* funcname, char* raw_args);
+  virtual int do_command(char* funcname);
 
   char * consume_token(char * command_line);
   void buffer_serial();

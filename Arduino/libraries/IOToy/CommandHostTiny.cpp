@@ -21,6 +21,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
   const char * CommandHostTiny::get(char * attribute) { return "-"; }
   int CommandHostTiny::set(char* attribute, char* raw_value) { return 404; }
   int CommandHostTiny::callfunc(char* funcname, char* raw_args) { return 404; }
+  int CommandHostTiny::do_command(char* funcname) { return 404; }
 
   char * CommandHostTiny::consume_token(char * command_line) {
     // Modifies the buffer in place - replacing spaces with nulls each time it's called.
@@ -93,6 +94,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
       char * args = rest;
 
       // command.toLowerCase(); // Can we do this?
+      // FIXME: provide help for built-ins
       if (strcmp(command,"help") == 0) {
         if (strstr(args," ")) {
           Serial.println(F("400:Fail:Cannot handle spaces in names when getting help"));
@@ -145,28 +147,25 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
           return;
         }
 
-      // Is it reasonable to do this anyway?
-      // Let's say we do this under all circumstances
-      // It really allows a 'proper' API then...
-      if (strcmp(command,"do") == 0) {
-        char * funcname= args;
-        char * value = consume_token(args);
-        Serial.print("Funcname:");
-        Serial.println(funcname);
-        Serial.print("Value:");
-        Serial.println(value);
-        int result = callfunc(funcname, value); // Intended to be overridden, must provide a way to describe failure...
-        if (result == 200) {
-          Serial.println(F("200:Success:-"));
-          return;
-        }
-        if (result == 404) {
-          Serial.println(F("404:funcname Not Found:-"));
-          return;
-        }
+      // Unknown function type call
+      // - hopefully a function call to the device's API
+      char * funcname= args;
+      char * value = consume_token(args);
+      Serial.print("Funcname:");
+      Serial.println(funcname);
+      Serial.print("Value:");
+      Serial.println(value);
+      int result = callfunc(funcname, value); // Intended to be overridden, must provide a way to describe failure...
+      if (result == 200) {
+        Serial.println(F("200:Success:-"));
         return;
-
       }
+      if (result == 404) {
+        Serial.println(F("404:funcname Not Found:-"));
+        return;
+      }
+      return;
+
     } else { // No space found. Could still be a single word command...
       int result = do_command(filename);
         if (result == 200) {
