@@ -86,6 +86,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
       Serial.println(F("help - try 'help help', 'funcs' and 'attrs'"));
       return;
     }
+    // If we find a space, it's reasonable to assume the following...
     if (strstr(command_line," ")) { // Find a space
       char * command = command_line;
       char * rest = consume_token(command_line);
@@ -144,6 +145,9 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
           return;
         }
 
+      // Is it reasonable to do this anyway?
+      // Let's say we do this under all circumstances
+      // It really allows a 'proper' API then...
       if (strcmp(command,"do") == 0) {
         char * funcname= args;
         char * value = consume_token(args);
@@ -163,6 +167,17 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
         return;
 
       }
+    } else { // No space found. Could still be a single word command...
+      int result = do_command(filename);
+        if (result == 200) {
+          Serial.println(F("200:Success:-"));
+          return;
+        }
+        if (result == 404) {
+          Serial.println(F("404:funcname Not Found:-"));
+          return;
+        }
+        
     }
   }
 
