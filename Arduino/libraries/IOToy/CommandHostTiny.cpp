@@ -32,6 +32,26 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
     return string_boundary;
   }
 
+  bool CommandHostTiny::has_builtinhelp(char * name) {
+    if (strcmp(name,"ping")==0) return true;
+    if (strcmp(name,"funcs")==0) return true;
+    if (strcmp(name,"attrs")==0) return true;
+    if (strcmp(name,"set")==0) return true;
+    if (strcmp(name,"get")==0) return true;
+    if (strcmp(name,"help")==0) return true;
+    return false;
+  }
+  const char * CommandHostTiny::builtinhelp(char * name) {
+    if (strcmp(name,"ping")==0) return "API test function";
+    if (strcmp(name,"funcs")==0) return "Return a list of function names";
+    if (strcmp(name,"attrs")==0) return "Return a list of attributes";
+    if (strcmp(name,"set")==0) return "set name value - set an attribute to a value";
+    if (strcmp(name,"get")==0) return "get name - return an attorney's value";
+    if (strcmp(name,"help")==0) return "help (name) - return help for a name";
+    return "-";
+  }
+//Serial.print("ping,funcs,attrs,set,get,help");
+
   void CommandHostTiny::buffer_serial() {
     while (Serial.available() >0) {
       char next_char = Serial.read();
@@ -100,7 +120,12 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
           Serial.println(F("400:Fail:Cannot handle spaces in names when getting help"));
           return;
         }
-        if (has_help(args)) {
+        if (has_builtinhelp(args)) {
+          const char * value = builtinhelp(args);
+          Serial.print(F("200:Help found:"));
+          Serial.println(value);
+        }
+        else if (has_help(args)) {
           const char * value = help(args);
           Serial.print(F("200:Help found:"));
           Serial.println(value);

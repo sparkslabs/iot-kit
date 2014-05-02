@@ -19,6 +19,9 @@ public:
   virtual const char * funcs();
   virtual bool exists(char * attribute);
   virtual bool has_help(char * name);
+  bool has_builtinhelp(char * name);
+  const char *builtinhelp(char * name);
+
   virtual const char *get(char * attribute);
   virtual int set(char* attribute, char* raw_value);
   virtual int callfunc(char* funcname, char* raw_args);
