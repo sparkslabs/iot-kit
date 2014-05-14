@@ -4,8 +4,8 @@
 #include <Arduino.h>
 
 class CommandHostTiny {
-  int line_length;
   bool have_line;
+  int line_length;
   char serial_buffer[141];
   void send_response(int status_code, char* message, char* result);
 

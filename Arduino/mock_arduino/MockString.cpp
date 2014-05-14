@@ -1,3 +1,5 @@
+#ifndef IOTOY_TEST_SUPPORT_MOCK_STRING_CPP
+#define IOTOY_TEST_SUPPORT_MOCK_STRING_CPP
 //
 // Mock version of the String interface to allow testing of arduino code without using an arduino
 // This is as noted below derived from the code described in the header file.
@@ -590,5 +592,4 @@ long String::toInt(void) const
 	if (buffer) return atol(buffer);
 	return 0;
 }
-
-
+#endif

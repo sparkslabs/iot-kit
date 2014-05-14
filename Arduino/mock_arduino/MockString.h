@@ -1,3 +1,5 @@
+#ifndef IOTOY_TEST_SUPPORT_MOCK_STRING_H
+#define IOTOY_TEST_SUPPORT_MOCK_STRING_H
 //
 // Mock version of the String interface to allow testing of arduino code without using an arduino
 // This is as noted below derived from the code described in the header file.
@@ -34,6 +36,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+char* itoa( int value, char* result, int base );
+
 // #include <avr/pgmspace.h>
 
 // When compiling programs with this class, the following gcc parameters
@@ -211,3 +216,5 @@ public:
 
 #endif  // __cplusplus
 #endif  // String_class_h
+
+#endif

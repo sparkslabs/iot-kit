@@ -6,8 +6,8 @@
 class CommandHost {
 // Provides the basics of a command host for the user to override all the interesting bits of.
 // Handles all the boring details.
-  int line_length;
   bool have_line;
+  int line_length;
   String serial_buffer;
 
 public:

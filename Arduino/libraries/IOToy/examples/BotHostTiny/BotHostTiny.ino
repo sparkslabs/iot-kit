@@ -22,16 +22,18 @@ public:
   BotHost() : drive_forward_time_ms(DRIVE_FORWARD_TIME_MS), turn_time_ms(TURN_TIME_MS) { }
   ~BotHost() { }
 
-
   const char *hostid() { 
     return "sumobot";
   }
+
   const char * attrs() {
     return "drive_forward_time_ms:int,turn_time_ms:int";
   }
+
   const char * funcs() { // need to implement on/off(!)
     return "forward,backward,left,right,on,off";
   }
+
   bool has_help(char * name) {
     if (strcmp(name,"drive_forward_time_ms")==0) return true;
     if (strcmp(name,"turn_time_ms")==0) return true;
@@ -39,16 +41,19 @@ public:
     if (strcmp(name,"off")==0) return true;
     return false;
   }
+
   const char *help(char * name) {
     if (strcmp(name,"drive_forward_time_ms")==0) return "How long to move forward";
     if (strcmp(name,"turn_time_ms")==0) return "How long to turn";
     return "-";
   }
+
   bool exists(char * attribute) {
     if (strcmp(attribute,"drive_forward_time_ms")==0) return true;
     if (strcmp(attribute,"turn_time_ms")==0) return true;
     return false;
   }
+
   const char *get(char * attribute) {
     if (strcmp(attribute,"drive_forward_time_ms")==0) { 
       itoa (drive_forward_time_ms, temp_str, 10); 
@@ -60,6 +65,7 @@ public:
     }
     return "-";
   }
+
   int set(char* attribute, char* raw_value) {
     if (strcmp(attribute,"drive_forward_time_ms")==0) {
       int value = atoi(raw_value);
@@ -73,35 +79,15 @@ public:
     }
     return 404;
   }
+
   int callfunc(char* funcname, char* raw_args) { 
-    if (strcmp(funcname,"forward")==0) {
-      forward();
-      return 200;
-    }
-    if (strcmp(funcname,"backward")==0) {
-      backward();
-      return 200;
-    }
-    if (strcmp(funcname,"left")==0) {
-      left();
-      return 200;
-    }
-    if (strcmp(funcname,"right")==0) {
-      right();
-      return 200;
-    }
+    if (strcmp(funcname,"forward")==0) { forward(); return 200; }
+    if (strcmp(funcname,"backward")==0) { backward(); return 200; }
+    if (strcmp(funcname,"left")==0) { left(); return 200; }
+    if (strcmp(funcname,"right")==0) { right(); return 200; }
     return 404; 
   }
-  int do_command(char* funcname) { 
-    if (strcmp(funcname,"boing")==0) {
-      forward();
-      backward();
-      left();
-      right();
-      return 200;
-    }
-    return 404; 
-  }
+
   void stop(void) {
     analogWrite( LEFT_MOTOR_PWM_PIN, 0 );
     analogWrite( RIGHT_MOTOR_PWM_PIN, 0 );
@@ -169,5 +155,4 @@ void loop()
 {
   MyCommandHost.run_host();
 }
-
 

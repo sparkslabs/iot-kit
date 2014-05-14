@@ -1,5 +1,5 @@
 
-#include "CommandHostTiny.h"
+#include <CommandHostTiny.h>
 #include <Arduino.h>
 
 void CommandHostTiny::send_response(int status_code, char* message, char* result) {
@@ -192,7 +192,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
       return;
 
     } else { // No space found. Could still be a single word command...
-      int result = do_command(command_line);
+        int result = do_command(command_line);
         if (result == 200) {
           Serial.println(F("200:Success:-"));
           return;
@@ -201,7 +201,6 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
           Serial.println(F("404:funcname Not Found:-"));
           return;
         }
-        
     }
   }
 

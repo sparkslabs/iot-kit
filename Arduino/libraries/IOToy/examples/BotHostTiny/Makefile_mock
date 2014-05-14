@@ -1,0 +1,24 @@
+all: BotHostTiny
+	@echo "This is a basic makefile, it has two main build targets"
+	@echo
+	@echo "tiny - A build target to test a version of the code for Atmeta 8A also known as ATiny"
+	@echo
+
+BotHostTiny:
+	rm -f *.o BotHostTiny
+	rm -rf build-mock
+	mkdir build-mock
+	cp BotHostTiny.ino build-mock
+	cp ../../*cpp ../../*h build-mock
+	cp -R ../../../../mock_arduino/ build-mock
+	sed -i "s/%INOFILE%/BotHostTiny.ino/g" build-mock/mock_arduino/host_test.cpp
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c CommandHostTiny.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/MockString.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/MockSerial.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/Arduino.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/host_test.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY host_test.o CommandHostTiny.o MockString.o MockSerial.o Arduino.o -o BotHostTiny )
+
+clean:
+	rm -f *.o BotHostTiny
+	rm -rf build-mock

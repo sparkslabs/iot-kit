@@ -1,8 +1,6 @@
-
+#ifndef IOTOY_TEST_SUPPORT_MOCKSERVO_H
+#define IOTOY_TEST_SUPPORT_MOCKSERVO_H
 // Mock version of the Servo interface to allow testing of arduino code without using an arduino
-
-#ifndef TEST_SUPPORT__MOCKSERVO_H
-#define TEST_SUPPORT__MOCKSERVO_H
 
 #include <iostream>
 
