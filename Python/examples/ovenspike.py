@@ -1,6 +1,11 @@
 #!/usr/bin/python
 
-from iotoy.spike import *
+import os
+import logging
+import time
+
+from iotoy.oven_spike import *
+from iotoy.dummyserial import mkserial
 
 #############################################################################################
 #
@@ -21,7 +26,7 @@ ser = mkserial()
 
 # Create a software simulation of a physical thing. In a real world implementation, this would be an actual thing.
 # Worth noting that we pass in something that has a serial style API though
-physicaloven = ActualOven(ser[0])
+physicaloven = MockArduino_OvenHost(ser[0])
 physicaloven.start()
 
 # Create the local proxy that is to be exposed by the web API - note that this passes in the serial port for the IOT object
