@@ -4,8 +4,31 @@
 #include <Arduino.h>
 
 class CommandHost {
-// Provides the basics of a command host for the user to override all the interesting bits of.
-// Handles all the boring details.
+  // @module IOToy.CommandHost
+  // Files: CommandHost.cpp / CommandHost.h
+  //
+  // Provides the core functionality of the system for your typical arduino platform.
+  //
+  // @class CommandHost
+  // This provides a basic command host for your arduino device. For devices using a smaller
+  // arduino (eg based on an Atmel 8A or similar), you probably want to use the CommandHostTiny
+  // class instead.
+  //
+  // It provides a base class for you to subclass. The base class provides the following
+  // core functionality
+  //
+  // * It provides a hook for your run loop to poll the serial connection for commands
+  //   and a means of interpreting these commands, and sending back responses over the
+  //   serial connection to the user of the device
+  // * It provides the following default commands to a user of the device:
+  // ** ping - responds with "pong"
+  // ** attrs - calls an attrs() function, and sends the result to the user.
+  // ** funcs - calls a funcs() function, and sends the result along with the default functions
+  // ** help - provides a hook for help functionality - both builtin and device specific
+  // ** set - used for setting an attribute value
+  // ** get - used for getting an attribute value
+  //
+
   bool have_line;
   int line_length;
   String serial_buffer;
@@ -13,9 +36,32 @@ class CommandHost {
 public:
 
   CommandHost() : have_line(false), line_length(0), serial_buffer("") {}
+  // @func CommandHost::CommandHost()
+  // Constructor, no arguments
+  //
+
   ~CommandHost() {}
+  //@func CommandHost::~CommandHost()
+  // destructor, no arguments
+  //
+
   void _ping();
+  //@func CommandHost::_ping()
+  // Called by CommandHost::interpret_line()
+  //
+  // Sends "pong" back to the user of the device. Basic health check.
+  //
+
   void _attrs();
+  //@func CommandHost::_ping()
+  // Called by CommandHost::interpret_line()
+  // Calls attrs() - expected to be implemented in subclass (see @@attrs() )
+  //
+  //
+  // The result is expect to be a 
+  // 
+  // Sends "pong" back to the user of the device. Basic health check.
+
   void _funcs();
   void _help();
   void _help(String name);
