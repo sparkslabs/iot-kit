@@ -72,10 +72,13 @@ From this view, you can have the following mappings:
 
 ### License ###
 
-The code in this release will all be under the Apache 2 Licence, with
-an option to allow reuse under the GPL version 2.
+You may use this code under the Apache 2 License. You may additionally use
+this code under the GPL version 2, but ask for any/all patches back to be
+provided under the apache 2 license (for simplicity's sake)
 
-Original implementations ©copyright 2013 BBC.
+Original implementation ©copyright 2013 BBC.
+
+Initial release 2014 by BBC Research & Development
 
 
 ### Contact ###
