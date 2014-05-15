@@ -1,5 +1,5 @@
-IOToy - An IOT Stack for Toys
-=============================
+IOToy - An IOT Stack for Toys and other Devices
+===============================================
 
 This is where a collection of tools for creating and working with toys
 connected to each other as *an* Internet of Toys. The following pieces
