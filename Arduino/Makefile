@@ -8,6 +8,11 @@ clean:
 	rm -f ../arduino-iotoy_*.deb ../arduino-iotoy_*.dsc ../arduino-iotoy_*.build ../arduino-iotoy_*.changes ../arduino-iotoy_*.tar.gz IOToy.zip
 	dh_clean
 
+cleanslate:
+	rm -f ../arduino-iotoy_*.deb ../arduino-iotoy_*.dsc ../arduino-iotoy_*.build ../arduino-iotoy_*.changes ../arduino-iotoy_*.tar.gz IOToy.zip
+	dh_clean
+	dpkg --purge arduino-iotoy
+
 deb:
 	debuild -uc -us
 
