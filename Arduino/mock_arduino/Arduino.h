@@ -1,7 +1,12 @@
 #ifndef IOTOY_TEST_SUPPORT_MOCK_ARDUINO_H
 #define IOTOY_TEST_SUPPORT_MOCK_ARDUINO_H
 
+#ifdef STDIOMOCKSERIAL
+#include <StdioMockSerial.h>
+#else
 #include <MockSerial.h>
+#endif
+
 #include <MockServo.h>
 // #i n c l u d e <MockString.cpp>
 #include <MockString.h>
