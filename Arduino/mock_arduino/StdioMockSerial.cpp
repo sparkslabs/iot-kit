@@ -153,5 +153,4 @@ void basic_Serial_Diagnostic() {
       std::cout << "CHAR : " << count << " : " << next_char << std::endl;
     }
     Serial.reset();
-g
 }
