@@ -192,7 +192,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
       return;
 
     } else { // No space found. Could still be a single word command...
-        int result = do_command(command_line);
+        int result = callfunc(command_line, NULL);
         if (result == 200) {
           Serial.println(F("200:Success:-"));
           return;
