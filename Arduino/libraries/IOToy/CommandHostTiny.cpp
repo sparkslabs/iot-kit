@@ -42,14 +42,17 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
     return false;
   }
   const char * CommandHostTiny::builtinhelp(char * name) {
-    if (strcmp(name,"ping")==0) return "API test function";
-    if (strcmp(name,"funcs")==0) return "Return a list of function names";
-    if (strcmp(name,"attrs")==0) return "Return a list of attributes";
+    if (strcmp(name,"ping")==0) return "ping - API test function";
+    if (strcmp(name,"funcs")==0) return "funcs - Return a list of function names";
+    if (strcmp(name,"attrs")==0) return "attrs - Return a list of attributes";
     if (strcmp(name,"set")==0) return "set name value - set an attribute to a value";
     if (strcmp(name,"get")==0) return "get name - return an attribute's value";
-    if (strcmp(name,"help")==0) return "help (name) - return help for a name NB: All names are case sensitive";
+    if (strcmp(name,"help")==0) return "help(name) - return help for a name NB: All names are case sensitive";
     return "-";
   }
+
+
+
 //Serial.print("ping,funcs,attrs,set,get,help");
 
   void CommandHostTiny::buffer_serial() {
