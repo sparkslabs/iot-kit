@@ -1,4 +1,4 @@
-all: BotHostTiny
+all: BotHostStdio
 	@echo "This is a basic makefile, it has two main build targets"
 	@echo
 	@echo "tiny - A build target to test a version of the code for Atmeta 8A also known as ATiny"
