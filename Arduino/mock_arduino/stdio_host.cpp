@@ -99,7 +99,9 @@ void stdin_restorebuffering() {
 int main(int argc, char *argv[]) {
   char c;
   stdin_setunbuffered();
+#ifdef TESTING
     std::cerr << "==================== Starting tests ====================" << std::endl;
+#endif
 
   DEBUG_OFF;
     Serial.reset();
@@ -127,7 +129,9 @@ int main(int argc, char *argv[]) {
           std::cout << result;
         } catch (...) { }
      }
+#ifdef TESTING
     std::cerr << "==================== Tests Finished ====================" << std::endl;
+#endif
   stdin_restorebuffering();
 
   return 0;

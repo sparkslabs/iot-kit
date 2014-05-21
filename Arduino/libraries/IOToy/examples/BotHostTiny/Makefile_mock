@@ -3,6 +3,7 @@ all: BotHostTiny
 	@echo
 	@echo "tiny - A build target to test a version of the code for Atmeta 8A also known as ATiny"
 	@echo
+	@echo 
 
 BotHostTiny:
 	rm -f *.o BotHostTiny
@@ -19,6 +20,22 @@ BotHostTiny:
 	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/host_test.cpp )
 	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY host_test.o CommandHostTiny.o MockString.o MockSerial.o Arduino.o -o BotHostTiny )
 
+BotHostStdio:
+	rm -f *.o BotHostStdio
+	rm -rf build-stdio
+	mkdir build-stdio
+	cp BotHostTiny.ino build-stdio
+	cp ../../*cpp ../../*h build-stdio
+	cp -R ../../../../mock_arduino/ build-stdio
+	sed -i "s/%INOFILE%/BotHostTiny.ino/g" build-stdio/mock_arduino/stdio_host.cpp
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c CommandHostTiny.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/MockString.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/StdioMockSerial.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/Arduino.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/stdio_host.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY stdio_host.o CommandHostTiny.o MockString.o StdioMockSerial.o Arduino.o -o BotHostStdio )
+
+
 clean:
-	rm -f *.o BotHostTiny
-	rm -rf build-mock
+	rm -f *.o BotHostTiny BotHostStdio
+	rm -rf build-mock build-stdio
