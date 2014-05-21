@@ -46,8 +46,8 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
     if (strcmp(name,"funcs")==0) return "Return a list of function names";
     if (strcmp(name,"attrs")==0) return "Return a list of attributes";
     if (strcmp(name,"set")==0) return "set name value - set an attribute to a value";
-    if (strcmp(name,"get")==0) return "get name - return an attorney's value";
-    if (strcmp(name,"help")==0) return "help (name) - return help for a name";
+    if (strcmp(name,"get")==0) return "get name - return an attribute's value";
+    if (strcmp(name,"help")==0) return "help (name) - return help for a name NB: All names are case sensitive";
     return "-";
   }
 //Serial.print("ping,funcs,attrs,set,get,help");
@@ -86,13 +86,14 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
     }
     if (strcmp(command_line,"attrs") == 0) {
         const char *result = attrs();
+        Serial.print("200:ATTRS OK:");
         Serial.print(result);
         Serial.println();
         return;
     }
     if (strcmp(command_line,"funcs") == 0) {
       const char *result = funcs();
-      Serial.print("ping,funcs,attrs,set,get,help");
+      Serial.print("200:FUNCS OK:ping,funcs,attrs,set,get,help");
       if (strlen(result) >0) {
         Serial.print(",");
         Serial.print(result);
@@ -104,7 +105,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
       return;
     }
     if (strcmp(command_line,"help") == 0) {
-      Serial.println(F("help - try 'help help', 'funcs' and 'attrs'"));
+      Serial.println(F("200:Help found:help - try 'help help', 'funcs' and 'attrs'"));
       return;
     }
     // If we find a space, it's reasonable to assume the following...

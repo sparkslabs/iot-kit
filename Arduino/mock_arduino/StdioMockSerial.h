@@ -13,13 +13,13 @@ class StdioMockSerial {
   std::string serial_data_fromdevice;
   bool debug;
   bool newline;
-
+  bool mShutdown;
 public:
   void dump();            // Called by test runner to inspect buffers
 
   // Next two used by the c++ file to create/destroy default serial interface
   StdioMockSerial() : serial_data(""),serial_data_fromdevice(""),
-                      debug(true),newline(true) { };
+                      debug(true),newline(true),mShutdown(false) { };
   ~StdioMockSerial() {};
 
   void debug_on();                       // Called by test runner to enable debugging
@@ -49,6 +49,9 @@ public:
   void println();                // Called by the Arduino Sketch to "\n" to serial comms 
   int available();               // Called by the Arduino Sketch to see if data is available
   int read();                    // Called by the Arduino Sketch to read data
+
+  bool _shutdown_signalled() { return mShutdown; } // Only implemented by the stdio tester
+  void _shutdown() { mShutdown = true; }
 };
 
 extern StdioMockSerial Serial;
