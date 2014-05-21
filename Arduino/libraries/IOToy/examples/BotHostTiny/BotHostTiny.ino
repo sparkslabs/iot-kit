@@ -37,14 +37,24 @@ public:
   bool has_help(char * name) {
     if (strcmp(name,"drive_forward_time_ms")==0) return true;
     if (strcmp(name,"turn_time_ms")==0) return true;
+    if (strcmp(name,"forward")==0) return true;
+    if (strcmp(name,"backward")==0) return true;
+    if (strcmp(name,"left")==0) return true;
+    if (strcmp(name,"right")==0) return true;
     if (strcmp(name,"on")==0) return true;
     if (strcmp(name,"off")==0) return true;
     return false;
   }
 
   const char *help(char * name) {
-    if (strcmp(name,"drive_forward_time_ms")==0) return "How long to move forward";
-    if (strcmp(name,"turn_time_ms")==0) return "How long to turn";
+    if (strcmp(name,"drive_forward_time_ms")==0) return "int - How long to move forward";
+    if (strcmp(name,"turn_time_ms")==0) return "int - How long to turn";
+    if (strcmp(name,"forward")==0) return "forward()() - Move forward for drive_forward_time_ms milliseconds";
+    if (strcmp(name,"backward")==0) return "backward()() - Move backward for drive_forward_time_ms milliseconds";
+    if (strcmp(name,"left")==0) return "left()() - Turn left for turn_time_ms milliseconds";
+    if (strcmp(name,"right")==0) return "right()() - Turn right for turn_time_ms milliseconds";
+    if (strcmp(name,"on")==0) return "on()() - Turn on";
+    if (strcmp(name,"off")==0) return "off()() - Turn on";
     return "-";
   }
 
