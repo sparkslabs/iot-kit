@@ -1,5 +1,5 @@
-IOToy - Internet of Toys (and other Devices)
-============================================
+# IOToy - Internet of Toys
+## (and other Devices)
 
 This is where a collection of tools for creating and working with toys
 connected to each other as *an* Internet of Toys. The following pieces
