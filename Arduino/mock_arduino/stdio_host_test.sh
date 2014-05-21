@@ -21,7 +21,7 @@ echo >&2 "how we actually do this is TBD"
 #  * The code calls Serial.shutdown() - not recommended
 #  * The test harness closes stdin - eg like in a pipe
 #  * The command line sends a EOF / control D via char code 4
-
+echo; echo "Func test --------------------------------------------"
 ( echo "ping" ;
   echo "help" ;
   echo "help help" ;
@@ -34,7 +34,10 @@ echo >&2 "how we actually do this is TBD"
   echo "help get" ;
 ) |./stdio_host
 
+echo; echo "bogus command test ------------------------------------"
 echo "hello" |./stdio_host ## This (no longer) causes a crash! :-)
+
+echo; echo "bogus function test --------------------------------------------"
 echo "hello world" |./stdio_host ## This (no longer) causes a crash! :-)
 
 echo >&2 "tests complete, leaving the binary here, cleaning rest"
