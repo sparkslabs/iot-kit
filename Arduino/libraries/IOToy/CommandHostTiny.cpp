@@ -155,6 +155,11 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
       }
 
       if (strcmp(command,"set") == 0) {
+          if (!strstr(args," ")) {
+            Serial.println(F("400:Fail:set attribute must be given a value"));
+            return;
+          }
+
           char * attribute = args;
           char * value = consume_token(args);
           Serial.print("Attribute:");
