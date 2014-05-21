@@ -40,5 +40,8 @@ echo "hello" |./stdio_host ## This (no longer) causes a crash! :-)
 echo; echo "bogus function test --------------------------------------------"
 echo "hello world" |./stdio_host ## This (no longer) causes a crash! :-)
 
+echo; echo "bogus function test --------------------------------------------"
+echo "set flibble" |./stdio_host ## This currently causes a crash! ...
+
 echo >&2 "tests complete, leaving the binary here, cleaning rest"
 rm -f *.o
