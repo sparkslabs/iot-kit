@@ -175,13 +175,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
 
       // Unknown function type call
       // - hopefully a function call to the device's API
-      char * funcname= args;
-      char * value = consume_token(args);
-      Serial.print("Funcname:");
-      Serial.println(funcname);
-      Serial.print("Value:");
-      Serial.println(value);
-      int result = callfunc(funcname, value); // Intended to be overridden, must provide a way to describe failure...
+      int result = callfunc(command, args); // Intended to be overridden, must provide a way to describe failure...
       if (result == 200) {
         Serial.println(F("200:Success:-"));
         return;

@@ -4,14 +4,14 @@ echo >&2 "Cleaning test area"
 rm -f *.o stdio_host *~
 
 echo >&2 "Building dependencies"
-g++ -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c ../libraries/IOToy/CommandHostTiny.cpp
-g++ -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c stdio_host.cpp
-g++ -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c Arduino.cpp
-g++ -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c StdioMockSerial.cpp
-g++ -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c MockString.cpp
+g++ -g -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c ../libraries/IOToy/CommandHostTiny.cpp
+g++ -g -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c stdio_host.cpp
+g++ -g -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c Arduino.cpp
+g++ -g -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c StdioMockSerial.cpp
+g++ -g -DTESTING -DSTDIOMOCKSERIAL -I. -I../libraries/IOToy -c MockString.cpp
 
 echo >&2 "linking test app"
-g++ stdio_host.o CommandHostTiny.o Arduino.o StdioMockSerial.o MockString.o -o stdio_host
+g++ -g stdio_host.o CommandHostTiny.o Arduino.o StdioMockSerial.o MockString.o -o stdio_host
 
 echo >&2 "Testing Host"
 echo >&2 "how we actually do this is TBD"
@@ -33,7 +33,9 @@ echo >&2 "how we actually do this is TBD"
   echo "help set" ;
   echo "help get" ;
 ) |./stdio_host
-echo "hello world" |./stdio_host ## This causes a crash! :-)
+
+echo "hello" |./stdio_host ## This (no longer) causes a crash! :-)
+echo "hello world" |./stdio_host ## This (no longer) causes a crash! :-)
 
 echo >&2 "tests complete, leaving the binary here, cleaning rest"
 rm -f *.o
