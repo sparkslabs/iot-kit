@@ -5,7 +5,9 @@
 #include <iostream>
 
 void delay(int t) {
+#ifdef TRACING
   std::cout << "DELAY NOT IMPLEMENTED YET, time " << t << std::endl;
+#endif
 }
 
 int analogRead(int pin) { return 128; }
