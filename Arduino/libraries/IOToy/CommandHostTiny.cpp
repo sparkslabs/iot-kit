@@ -2,16 +2,6 @@
 #include <CommandHostTiny.h>
 #include <Arduino.h>
 
-void CommandHostTiny::send_response(int status_code, char* message, char* result) {
-    Serial.print(status_code);
-    Serial.print(":");
-    Serial.print(message);
-    Serial.print(":");
-    Serial.print(result);
-    Serial.println();
-}
-
-
   const char * CommandHostTiny::hostid() { return "generic_1"; }
   const char * CommandHostTiny::help(char * name) { return ""; }
   const char * CommandHostTiny::attrs() { return ""; }
@@ -42,12 +32,13 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
     return false;
   }
   const char * CommandHostTiny::builtinhelp(char * name) {
-    if (strcmp(name,"ping")==0) return "ping - API test function";
-    if (strcmp(name,"funcs")==0) return "funcs - Return a list of function names";
-    if (strcmp(name,"attrs")==0) return "attrs - Return a list of attributes";
-    if (strcmp(name,"set")==0) return "set name value - set an attribute to a value";
-    if (strcmp(name,"get")==0) return "get name - return an attribute's value";
-    if (strcmp(name,"help")==0) return "help(name) - return help for a name NB: All names are case sensitive";
+    if (strcmp(name,"ping")==0) return "ping -> - API test function";
+    if (strcmp(name,"devinfo")==0) return "devinfo -> str - return information about the device.";
+    if (strcmp(name,"funcs")==0) return "funcs -> str* - Return a list of function names";
+    if (strcmp(name,"attrs")==0) return "attrs -> str* - Return a list of attributes";
+    if (strcmp(name,"set")==0) return "set name:str value:T - set an attribute to a value";
+    if (strcmp(name,"get")==0) return "get name:str -> value:T - return an attribute's value";
+    if (strcmp(name,"help")==0) return "help name:str -> str - return help for a name NB: All names are case sensitive";
     return "-";
   }
 
@@ -83,22 +74,21 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
     have_line = false;
 
     if (strcmp(command_line,"ping") == 0) {
-        send_response(200, (char*) "OK", (char*) "pong");
-//          Serial.println("200:OK:pong");
+          Serial.println(F("200:OK:pong"));
         return;
     }
     if (strcmp(command_line,"attrs") == 0) {
         const char *result = attrs();
-        Serial.print("200:ATTRS OK:");
+        Serial.print(F("200:ATTRS OK:"));
         Serial.print(result);
         Serial.println();
         return;
     }
     if (strcmp(command_line,"funcs") == 0) {
       const char *result = funcs();
-      Serial.print("200:FUNCS OK:ping,funcs,attrs,set,get,help");
+      Serial.print(F("200:FUNCS OK:ping,funcs,attrs,set,get,help"));
       if (strlen(result) >0) {
-        Serial.print(",");
+        Serial.print(F(","));
         Serial.print(result);
         Serial.println();
       }
@@ -108,7 +98,12 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
       return;
     }
     if (strcmp(command_line,"help") == 0) {
-      Serial.println(F("200:Help found:help - try 'help help', 'funcs' and 'attrs'"));
+      Serial.println(F("200:Help found:help -> str - try 'help help', 'funcs' and 'attrs'"));
+      return;
+    }
+    if (strcmp(command_line,"devinfo") == 0) {
+      Serial.print(F("200:DEV READY:"));
+      Serial.println( hostid()); // Name of the device. May or may note be used on the network verbatim
       return;
     }
     // If we find a space, it's reasonable to assume the following...
@@ -165,10 +160,6 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
 
           char * attribute = args;
           char * value = consume_token(args);
-          Serial.print("Attribute:");
-          Serial.println(attribute);
-          Serial.print("Value:");
-          Serial.println(value);
           int result = set(attribute, value); // Intended to be overridden, must provide a way to describe failure...
           if (result == 200) {
             Serial.println(F("200:Success:-"));
@@ -216,9 +207,7 @@ void CommandHostTiny::send_response(int status_code, char* message, char* result
 
   void CommandHostTiny::setup() {
       Serial.begin(9600);    // Data rate should be configurable
-      Serial.print("DEV ");
-      Serial.print( hostid()); // Name of the device. May or may note be used on the network verbatim
-      Serial.print(" "); 
+      Serial.print(F("200:DEV READY:"));
+      Serial.println( hostid()); // Name of the device. May or may note be used on the network verbatim
       // Ideally also want a sufficiently unique id here.
-      Serial.println("OK");
   }
