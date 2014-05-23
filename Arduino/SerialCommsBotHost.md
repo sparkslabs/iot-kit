@@ -12,19 +12,25 @@ standard introspection:
     recv: "found:help -> str - try 'help help', 'funcs' and 'attrs'"
 
     send: "help help"
-    recv: "200:Help found:help name:str -> str - return help for a name NB: All names are case sensitive"
+    recv: "200:Help found:help name:str -> helptext:str - return help for a name NB: All names are case sensitive"
 
     send: "help funcs"
-    recv: "200:Help found:funcs -> str* - Return a list of function names"
+    recv: "200:Help found:funcs -> funclist:str* - Return a list of function names"
 
     send: "help attrs"
-    recv: "200:Help found:attrs -> str* - Return a list of attributes"
+    recv: "200:Help found:attrs -> attrlist:str* - Return a list of attributes"
 
     send: "help set"
     recv: "200:Help found:set name:str value:T -> - set an attribute to a value"
 
     send: "help get"
     recv: "200:Help found:get name:str -> value:T - return an attribute's value"
+
+    send: "help ping"
+    recv: "200:Help found:ping -> pong:str - API test function"
+
+    send: "help devinfo"
+    recv: "200:Help found:devinfo -> devname:str - return information about the device."
 
 BotHostTiny introspection:
 
