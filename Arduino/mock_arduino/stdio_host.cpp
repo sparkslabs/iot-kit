@@ -20,6 +20,7 @@ Currently testing like this:
 #include <unistd.h>
 #include <termios.h>
 
+#include <string>
 #include <sstream>
 
 #ifdef TESTING
@@ -67,7 +68,7 @@ void loop() {
 
 bool stdin_available() {
   struct timeval timeout;
-  usleep(1); // Don't burn CPU
+  usleep(10); // Don't burn CPU
   fd_set fds;
   timeout.tv_sec = 0;
   timeout.tv_usec = 1000;
@@ -77,62 +78,27 @@ bool stdin_available() {
   return FD_ISSET(STDIN, &fds);
 }
 
-void stdin_setunbuffered() {
-  struct termios stdin_term;
-
-  tcgetattr(STDIN_FILENO, &stdin_term);   //get the terminal state
-  stdin_term.c_lflag &= ~ICANON;          //turn off canonical mode
-  stdin_term.c_cc[VMIN] = 1;              //minimum of number input read.
-  //set the terminal attributes.
-  tcsetattr(STDIN_FILENO, TCSANOW, &stdin_term);
-}
-
-void stdin_restorebuffering() {
-  struct termios stdin_term;
-
-  tcgetattr(STDIN_FILENO, &stdin_term);  //get the terminal state
-  stdin_term.c_lflag |= ICANON;          //turn on canonical mode
-  //set the terminal attributes.
-  tcsetattr(STDIN_FILENO, TCSANOW, &stdin_term);
-}
-
 int main(int argc, char *argv[]) {
-  char c;
-  stdin_setunbuffered();
-#ifdef TESTING
-    std::cerr << "==================== Starting tests ====================" << std::endl;
-#endif
-
-  DEBUG_OFF;
+  std::string line;
+ DEBUG_OFF;
     Serial.reset();
     Serial.dump();
 
      setup();
      while (!Serial._shutdown_signalled()) { // The StdioSerial module has this additional function - to allow us to shut the system down.
-       if (stdin_available()) {
-         c = fgetc(stdin);
-         if (c == -1) {
-            Serial._shutdown();
-         } else if (c == 4) { // This is control-D on the terminal in Linux
-            Serial._shutdown();
-         } else {
-            std::string x;
-            std::stringstream ss;
-            ss << c;
-            x = ss.str();
-            Serial.send_from_host(x);
-         }
-       }
        loop();
+        if (stdin_available()) {
+           std::getline(std::cin, line);
+           Serial.send_from_host(line+"\n");
+        }
+        if (std::cin.eof()) {
+          break;
+        }
+
         try {
           std::string result = Serial.recv_on_host();
           std::cout << result;
         } catch (...) { }
      }
-#ifdef TESTING
-    std::cerr << "==================== Tests Finished ====================" << std::endl;
-#endif
-  stdin_restorebuffering();
-
   return 0;
 }
