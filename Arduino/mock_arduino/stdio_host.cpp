@@ -86,6 +86,11 @@ int main(int argc, char *argv[]) {
 
      setup();
      while (!Serial._shutdown_signalled()) { // The StdioSerial module has this additional function - to allow us to shut the system down.
+        try {
+          std::string result = Serial.recv_on_host();
+          std::cout << result;
+          fflush(stdout);
+        } catch (...) { }
        loop();
         if (stdin_available()) {
            std::getline(std::cin, line);
@@ -94,11 +99,6 @@ int main(int argc, char *argv[]) {
         if (std::cin.eof()) {
           break;
         }
-
-        try {
-          std::string result = Serial.recv_on_host();
-          std::cout << result;
-        } catch (...) { }
      }
   return 0;
 }
