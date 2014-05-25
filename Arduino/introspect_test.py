@@ -19,6 +19,19 @@ class commandio(object):
         self._send.write(data + "\n")
         self._send.flush()
 
+try:
+    os.stat("./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio")
+except OSError:
+    print "=================================================================="
+    print
+    print "  You need to build the BotHostStdio example for this to work..."
+    print
+    print "cd ./libraries/IOToy/examples/BotHostTiny/"
+    print "make -f Makefile_mock"
+    print
+    print "=================================================================="
+    raise
+
 io = commandio("./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio")
 
 startline = io.recv()
