@@ -2,7 +2,7 @@
 
 import os, select, time, pprint
 
-default_host = "./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio"
+default_host = "./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio"
 
 def parse_hostline(hostline):
     assert hostline[-1] == "\n"
@@ -40,13 +40,13 @@ class commandio(object):
         return parse_hostline(result)
 
 try:
-    os.stat("./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio")
+    os.stat("./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio")
 except OSError:
     print "=================================================================="
     print
-    print "  You need to build the BotHostStdio example for this to work..."
+    print "  You need to build the TestHostStdio example for this to work..."
     print
-    print "cd ./libraries/IOToy/examples/BotHostTiny/"
+    print "cd ./libraries/IOToy/examples/TestHostTiny/"
     print "make -f Makefile_mock"
     print
     print "=================================================================="
@@ -86,9 +86,16 @@ class DeviceProxy(object):
         funcspec = funcsig[:funcsig.find(" - ")]
         funcspec = funcspec[funcspec.find(" ")+1:]
         funchelp = funcsig[funcsig.find(" - ")+3:]
+        if funcspec == "->":
+            args = []
+            result = []
+        else:
+            args = "unparsed"
+            result = "unparsed"
         #print funcname +"::" + funcspec +"::" +funchelp
         self.funcs[name] = { "name" : funcname,
-                             "spec" : funcspec,
+                             "spec" : { "args": args,
+                                       "result": result },
                              "help" : funchelp
                            }
 
