@@ -58,10 +58,11 @@ except OSError:
     raise
 
 class DeviceProxy(object):
-    def __init__(self):
+    def __init__(self,device=None):
         self.name = None
         self.funcs = {}
         self.attrs = {}
+        self.device = device
 
     def set_name(self, name):
         self.name = name
@@ -130,33 +131,32 @@ class DeviceProxy(object):
                            }
 
     def __repr__(self):
-        return pprint.pformat({"devicename" : self.name,
-                               "funcs" : self.funcs,
-                               "attrs" : self.attrs})
+        return pprint.pformat(self.devinfo(), width=132)
 
-    def device_spec(self):
+    def devinfo(self):
         return {"devicename" : self.name,
                 "funcs" : self.funcs,
                 "attrs" : self.attrs}
 
+    def introspect_device(self):
+        startline = io.recv() # Initial startline may fail - eg device was connected some time beforehand
+        code, message, data = parse_hostline(startline)
+
+        if code == 200:
+            self.set_name(data)
+
+        code, message, funclist  = io.call("funcs")
+        code, message, attrlist  = io.call("attrs")
+
+        self.configure_funclist(funclist)
+        self.configure_attrlist(attrlist)
+
+        for name in self.funcs.keys():
+            code, message, funcsig  = io.call("help %s" % name)
+            self.configure_func(name, funcsig)
+
 io = commandio(default_host)
+p = DeviceProxy(device=io)
+p.introspect_device()
 
-startline = io.recv()
-
-code, message, data = parse_hostline(startline)
-
-p = DeviceProxy()
-if code == 200:
-    p.set_name(data)
-
-code, message, funclist  = io.call("funcs")
-code, message, attrlist  = io.call("attrs")
-
-p.configure_funclist(funclist)
-p.configure_attrlist(attrlist)
-
-for name in p.funcs.keys():
-    code, message, funcsig  = io.call("help %s" % name)
-    p.configure_func(name, funcsig)
-
-pprint.pprint(p,width=200)
+print p
