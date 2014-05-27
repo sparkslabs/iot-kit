@@ -164,17 +164,57 @@ class DeviceProxy(object):
         else:
             if name in self.funcs.keys():
                 if len(self.funcs[name]["spec"]["args"])==0:
+                    if len(self.funcs[name]["spec"]["result"])==1:
+                        resultname, resulttype = self.funcs[name]["spec"]["result"][0]
+                    else:
+                        resultname, resulttype = None, None
+
                     def function_proxy():
                         code, message, result = self.device.call("%s" % name)
+                        if resulttype != None:
+                            if resulttype == "int":
+                                result = int(result)
+
+                            if resulttype == "bool":
+                                result = True if result == "True" else False
+
+                            if resulttype == "float":
+                                result = float(result)
                         return result
 
                 elif len(self.funcs[name]["spec"]["args"])==1:
-                    print "CALLSPEC needs arguments type checking/enforcing"
+                    argname, argtype = self.funcs[name]["spec"]["args"][0]
+                    if len(self.funcs[name]["spec"]["result"])==1:
+                        resultname, resulttype = self.funcs[name]["spec"]["result"][0]
+                    else:
+                        resultname, resulttype = None, None
+
                     def function_proxy(arg):
+                        if argtype == "int" and arg.__class__ != int:
+                            raise ValueError("Should be int, recieved %s" % arg.__class__.__name__)
+
+                        if argtype == "bool" and arg.__class__ != bool:
+                            raise ValueError("Should be bool, recieved %s" % arg.__class__.__name__)
+
+                        if argtype == "str" and arg.__class__ != str:
+                            raise ValueError("Should be str, recieved %s" % arg.__class__.__name__)
+
+                        if argtype == "float" and arg.__class__ != float:
+                            raise ValueError("Should be float, recieved %s" % arg.__class__.__name__)
+
                         callspec = "%s %s" % (name, str(arg))
-                        print "CALLSPEC", repr(callspec)
                         code, message, result = self.device.call(callspec)
-                        print "RESULT needs type checking/enforcing"
+                        if resulttype != None:
+                            print "RESULT TYPE", resulttype
+                            if resulttype == "int":
+                                result = int(result)
+
+                            if resulttype == "bool" and result.__class__ != bool:
+                                result = True if value == "True" else False
+
+                            if resulttype == "float":
+                                result = float(result)
+
                         return result
                 else:
                     raise ValueError("Don't really understand the calling spec")
@@ -275,9 +315,81 @@ except ValueError as e:
     print "Successfully caught attempt to put a str into an int"
 
 print p.barecommand
-print p.barecommand()
+p.barecommand()
 
-print p.one_arg_int
-print p.one_arg_int(1)
-print p.one_arg_str("hello")
-print p.one_arg_float(1.1)
+p.one_arg_int
+p.one_arg_int(1)
+try:
+    p.one_arg_int(1.1)
+except ValueError as e:
+    if e.message != "Should be int, recieved float":
+       raise
+    print "Successfully caught bad argument:", e
+
+try:
+    p.one_arg_int("hello")
+except ValueError as e:
+    if e.message != "Should be int, recieved str":
+       raise
+    print "Successfully caught bad argument:", e
+
+try:
+    p.one_arg_int(True)
+except ValueError as e:
+    if e.message != "Should be int, recieved bool":
+       raise
+    print "Successfully caught bad argument:", e
+
+
+
+p.one_arg_str("hello")
+try:
+    p.one_arg_str(1)
+except ValueError as e:
+    if e.message != "Should be str, recieved int":
+       raise
+    print "Successfully caught bad argument:", e
+
+try:
+    print p.one_arg_str(1.1)
+except ValueError as e:
+    if e.message != "Should be str, recieved float":
+       raise
+    print "Successfully caught bad argument:", e
+
+try:
+    p.one_arg_str(True)
+except ValueError as e:
+    if e.message != "Should be str, recieved bool":
+       raise
+    print "Successfully caught bad argument:", e
+
+p.one_arg_float(1.1)
+try:
+    p.one_arg_float(1)
+except ValueError as e:
+    if e.message != "Should be float, recieved int":
+       raise
+    print "Successfully caught bad argument:", e
+
+try:
+    p.one_arg_float("hello")
+except ValueError as e:
+    if e.message != "Should be float, recieved str":
+       raise
+    print "Successfully caught bad argument:", e
+
+try:
+    p.one_arg_float(True)
+except ValueError as e:
+    if e.message != "Should be float, recieved bool":
+       raise
+    print "Successfully caught bad argument:", e
+
+print p.no_arg_result_int()
+print p.no_arg_result_bool()
+print p.no_arg_result_str()
+print p.no_arg_result_float()
+print p.no_arg_result_T()
+
+
