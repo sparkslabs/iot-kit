@@ -172,11 +172,11 @@ Where:
  * name - must be [a-z][a-z0-9_]*
  * type describes the type of the argument/result and may be the following:
     - str - string - no quotes should be used
-    - This seems awkward, but remember this would set a string to empty:
-      - "set name \n"
-      As opposed to non-empty:
-      - "set name .\n"
-      You can't have an empty attribute or function name.
+        - This seems awkward, but remember this would set a string to empty:
+          - "set name \n"
+          As opposed to non-empty:
+          - "set name .\n"
+          You can't have an empty attribute or function name.
 
     - int - may be up to +-2**31. If you need more, use more attributes
     - float - IEEE 754 double
@@ -205,4 +205,3 @@ It should be relatively clear here that:
   case and not generally supported
 * The lack of "->" in the first two indicate they are response strings from attributes
   not functions - which means they only mention the type and human readable text.
-
