@@ -155,8 +155,103 @@ class DeviceProxy(object):
             code, message, funcsig  = io.call("help %s" % name)
             self.configure_func(name, funcsig)
 
+    def __getattribute__(self, name):
+        if (name in ["__repr__", "devinfo", "introspect_device", "configure_func",
+                     "configure_attrlist", "configure_funclist", "set_name", "__init__",
+                     "name", "funcs", "attrs", "device"]):
+            x = super(DeviceProxy, self).__getattribute__(name)
+            return x
+        else:
+            if name in self.funcs.keys():
+                return "wibble"
+            elif name in self.attrs.keys():
+                code, code_message, value = self.device.call("get %s" % name)
+                if code != 200:
+                    raise AttributeError("Cannot get %s, because %s" % (name, code_message))
+                if self.attrs[name]["type"] == "int":
+                    value = int(value)
+                if self.attrs[name]["type"] == "float":
+                    value = float(value)
+                if self.attrs[name]["type"] == "bool":
+                    if value == "True":
+                        value = True
+                    elif value == "False":
+                        value = False
+                    else:
+                        raise ValueError("Bool values MUST be 'True' or 'False'")
+                    value = True if value == "True" else False
+                return value
+            else:
+                super(DeviceProxy, self).__getattribute__(name)
+
+    def __setattr__(self, name, value):
+        if (name in ["__repr__", "devinfo", "introspect_device", "configure_func",
+                     "configure_attrlist", "configure_funclist", "set_name", "__init__",
+                     "name", "funcs", "attrs", "device"]):
+            x = super(DeviceProxy, self).__setattr__(name,value)
+            return x
+        else:
+            if name in self.funcs.keys():
+                raise ValueError("Cannot Set Function value")
+            elif name in self.attrs.keys():
+                if self.attrs[name]["type"] == "int":
+                    if value.__class__ != int:
+                        raise ValueError("%s is an int, but you provided %s which is %s" % (name, repr(value), repr(value.__class__.__name__) ) )
+
+                if self.attrs[name]["type"] == "float":
+                    if value.__class__ != float:
+                        raise ValueError("%s is a float, but you provided %s which is %s" % (name, repr(value), repr(value.__class__.__name__) ) )
+
+                if self.attrs[name]["type"] == "str":
+                    if value.__class__ != str:
+                        raise ValueError("%s is a str, but you provided %s which is %s" % (name, repr(value), repr(value.__class__.__name__) ) )
+
+                if self.attrs[name]["type"] == "bool":
+                    if value.__class__ != bool:
+                        raise ValueError("%s is a bool, but you provided %s which is %s" % (name, repr(value), repr(value.__class__.__name__) ) )
+
+                result = self.device.call("set %s %s" % (name, str(value)) )
+                return result
+            else:
+                super(DeviceProxy, self).__getattribute__(name)
+
 io = commandio(default_host)
 p = DeviceProxy(device=io)
 p.introspect_device()
 
 print p
+
+print
+
+print "p.drive_forward_time_ms", repr(p.drive_forward_time_ms)
+p.drive_forward_time_ms = 1000
+print "p.drive_forward_time_ms", repr(p.drive_forward_time_ms)
+assert p.drive_forward_time_ms == 1000
+
+print
+
+print "p.turn_time_ms", repr(p.turn_time_ms)
+p.turn_time_ms = 500
+print "p.turn_time_ms", repr(p.turn_time_ms)
+
+assert p.turn_time_ms == 500
+
+try:
+    p.turn_time_ms = True
+except ValueError as e:
+    assert e.message == "turn_time_ms is an int, but you provided True which is 'bool'"
+    print "Successfully caught attempt to put a bool into an int"
+
+try:
+    p.turn_time_ms = 1.1
+except ValueError as e:
+    if e.message != "turn_time_ms is an int, but you provided 1.1 which is 'float'":
+        raise e
+    print "Successfully caught attempt to put a float into an int"
+
+try:
+    p.turn_time_ms = 'hello'
+except ValueError as e:
+    if e.message != "turn_time_ms is an int, but you provided 'hello' which is 'str'":
+        raise e
+    print "Successfully caught attempt to put a str into an int"
