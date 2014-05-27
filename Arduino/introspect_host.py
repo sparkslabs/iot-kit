@@ -5,7 +5,7 @@ import os, select, time, pprint
 default_host = "./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio"
 
 def parse_hostline(hostline):
-    assert hostline[-1] == "\n"
+    assert (hostline[-1] == "\n")
     hostline = hostline[:-1] # trim EOL
     statuscode = hostline[:hostline.find(":")]
     statuscode = int(statuscode)
@@ -20,10 +20,15 @@ class commandio(object):
         self._send, self._recv = os.popen2(self.command)
 
     def recv(self):
-        time.sleep(0.01)
-        r,w,e = select.select([self._recv], [self._send], [])
-        if self._recv not in r:
-            raise Exception("Bad Device")
+        now = time.time()
+        while True:
+            r,w,e = select.select([self._recv], [self._send], [])
+            time.sleep(0.01)
+            if self._recv in r:
+                break
+            else:
+                if time.time() - now > 1: # stdio device should definitely respond within 1 second
+                    raise Exception("Bad Device")
         line = self._recv.readline()
         return line
 
