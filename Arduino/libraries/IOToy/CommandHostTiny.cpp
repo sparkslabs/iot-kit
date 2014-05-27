@@ -175,9 +175,15 @@
 
       // Unknown function type call
       // - hopefully a function call to the device's API
+      result_string[0] = 0;
       int result = callfunc(command, args); // Intended to be overridden, must provide a way to describe failure...
       if (result == 200) {
-        Serial.println(F("200:Success:-"));
+        Serial.print(F("200:Success:"));
+        if (strcmp(result_string,"")==0) {
+            Serial.println(F("-"));
+        } else {
+            Serial.println(F(result_string));
+        }
         return;
       }
       if (result == 404) {
@@ -187,9 +193,16 @@
       return;
 
     } else { // No space found. Could still be a single word command...
+        result_string[0] = 0;
+
         int result = callfunc(command_line, NULL);
         if (result == 200) {
-          Serial.println(F("200:Success:-"));
+          Serial.print(F("200:Success:"));
+          if (strcmp(result_string,"")==0) {
+              Serial.println(F("-"));
+          } else {
+              Serial.println(F(result_string));
+          }
           return;
         }
         if (result == 404) {

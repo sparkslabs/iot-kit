@@ -10,7 +10,10 @@ class CommandHostTiny {
   void send_response(int status_code, char* message, char* result);
 
 public:
-  CommandHostTiny() : have_line(false), line_length(0) {}
+  char result_string[141];
+  CommandHostTiny() : have_line(false), line_length(0) {
+    result_string[0] = 0;
+  }
   ~CommandHostTiny() {}
 
   virtual const char *hostid();
