@@ -3,6 +3,7 @@
 import os, select, time, pprint
 
 default_host = "./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio"
+default_host = "./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio"
 
 def parse_hostline(hostline):
     assert (hostline[-1] == "\n")
@@ -205,7 +206,6 @@ class DeviceProxy(object):
                         callspec = "%s %s" % (name, str(arg))
                         code, message, result = self.device.call(callspec)
                         if resulttype != None:
-                            print "RESULT TYPE", resulttype
                             if resulttype == "int":
                                 result = int(result)
 
@@ -314,82 +314,92 @@ except ValueError as e:
         raise e
     print "Successfully caught attempt to put a str into an int"
 
-print p.barecommand
-p.barecommand()
+if default_host == "./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio":
 
-p.one_arg_int
-p.one_arg_int(1)
-try:
-    p.one_arg_int(1.1)
-except ValueError as e:
-    if e.message != "Should be int, recieved float":
-       raise
-    print "Successfully caught bad argument:", e
+    print p.barecommand
+    p.barecommand()
 
-try:
-    p.one_arg_int("hello")
-except ValueError as e:
-    if e.message != "Should be int, recieved str":
-       raise
-    print "Successfully caught bad argument:", e
+    p.one_arg_int
+    p.one_arg_int(1)
+    try:
+        p.one_arg_int(1.1)
+    except ValueError as e:
+        if e.message != "Should be int, recieved float":
+           raise
+        print "Successfully caught bad argument:", e
 
-try:
-    p.one_arg_int(True)
-except ValueError as e:
-    if e.message != "Should be int, recieved bool":
-       raise
-    print "Successfully caught bad argument:", e
+    try:
+        p.one_arg_int("hello")
+    except ValueError as e:
+        if e.message != "Should be int, recieved str":
+           raise
+        print "Successfully caught bad argument:", e
+
+    try:
+        p.one_arg_int(True)
+    except ValueError as e:
+        if e.message != "Should be int, recieved bool":
+           raise
+        print "Successfully caught bad argument:", e
 
 
 
-p.one_arg_str("hello")
-try:
-    p.one_arg_str(1)
-except ValueError as e:
-    if e.message != "Should be str, recieved int":
-       raise
-    print "Successfully caught bad argument:", e
+    p.one_arg_str("hello")
+    try:
+        p.one_arg_str(1)
+    except ValueError as e:
+        if e.message != "Should be str, recieved int":
+           raise
+        print "Successfully caught bad argument:", e
 
-try:
-    print p.one_arg_str(1.1)
-except ValueError as e:
-    if e.message != "Should be str, recieved float":
-       raise
-    print "Successfully caught bad argument:", e
+    try:
+        print p.one_arg_str(1.1)
+    except ValueError as e:
+        if e.message != "Should be str, recieved float":
+           raise
+        print "Successfully caught bad argument:", e
 
-try:
-    p.one_arg_str(True)
-except ValueError as e:
-    if e.message != "Should be str, recieved bool":
-       raise
-    print "Successfully caught bad argument:", e
+    try:
+        p.one_arg_str(True)
+    except ValueError as e:
+        if e.message != "Should be str, recieved bool":
+           raise
+        print "Successfully caught bad argument:", e
 
-p.one_arg_float(1.1)
-try:
-    p.one_arg_float(1)
-except ValueError as e:
-    if e.message != "Should be float, recieved int":
-       raise
-    print "Successfully caught bad argument:", e
+    p.one_arg_float(1.1)
+    try:
+        p.one_arg_float(1)
+    except ValueError as e:
+        if e.message != "Should be float, recieved int":
+           raise
+        print "Successfully caught bad argument:", e
 
-try:
-    p.one_arg_float("hello")
-except ValueError as e:
-    if e.message != "Should be float, recieved str":
-       raise
-    print "Successfully caught bad argument:", e
+    try:
+        p.one_arg_float("hello")
+    except ValueError as e:
+        if e.message != "Should be float, recieved str":
+           raise
+        print "Successfully caught bad argument:", e
 
-try:
-    p.one_arg_float(True)
-except ValueError as e:
-    if e.message != "Should be float, recieved bool":
-       raise
-    print "Successfully caught bad argument:", e
+    try:
+        p.one_arg_float(True)
+    except ValueError as e:
+        if e.message != "Should be float, recieved bool":
+           raise
+        print "Successfully caught bad argument:", e
 
-print p.no_arg_result_int()
-print p.no_arg_result_bool()
-print p.no_arg_result_str()
-print p.no_arg_result_float()
-print p.no_arg_result_T()
+    print p.no_arg_result_int()
+    print p.no_arg_result_bool()
+    print p.no_arg_result_str()
+    print p.no_arg_result_float()
+    print p.no_arg_result_T()
+
+if default_host == "./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio":
+    print p.forward()
+    print p.backward()
+    print p.left()
+    print p.right()
+    print p.on()
+    print p.off()
 
 
