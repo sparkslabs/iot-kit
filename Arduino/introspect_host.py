@@ -163,7 +163,25 @@ class DeviceProxy(object):
             return x
         else:
             if name in self.funcs.keys():
-                return "wibble"
+                if len(self.funcs[name]["spec"]["args"])==0:
+                    def function_proxy():
+                        code, message, result = self.device.call("%s" % name)
+                        return result
+
+                elif len(self.funcs[name]["spec"]["args"])==1:
+                    print "CALLSPEC needs arguments type checking/enforcing"
+                    def function_proxy(arg):
+                        callspec = "%s %s" % (name, str(arg))
+                        print "CALLSPEC", repr(callspec)
+                        code, message, result = self.device.call(callspec)
+                        print "RESULT needs type checking/enforcing"
+                        return result
+                else:
+                    raise ValueError("Don't really understand the calling spec")
+
+                function_proxy.func_name = "%s_Proxy" % name
+                return function_proxy
+
             elif name in self.attrs.keys():
                 code, code_message, value = self.device.call("get %s" % name)
                 if code != 200:
@@ -255,3 +273,11 @@ except ValueError as e:
     if e.message != "turn_time_ms is an int, but you provided 'hello' which is 'str'":
         raise e
     print "Successfully caught attempt to put a str into an int"
+
+print p.barecommand
+print p.barecommand()
+
+print p.one_arg_int
+print p.one_arg_int(1)
+print p.one_arg_str("hello")
+print p.one_arg_float(1.1)
