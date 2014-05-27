@@ -67,6 +67,13 @@ public:
     return "-";
   }
 
+
+  int no_arg_result_int() { strcpy(result_string, F("100")); return 200; }
+  int no_arg_result_bool() { strcpy(result_string, F("True")); return 200; }
+  int no_arg_result_str() { strcpy(result_string, F("hello")); return 200; }
+  int no_arg_result_float() { strcpy(result_string, F("1.1")); return 200; }
+  int no_arg_result_T() { strcpy(result_string, F("4j2")); return 200; }
+
   bool exists(char * attribute) {
     if (strcmp(attribute,"drive_forward_time_ms")==0) return true;
     if (strcmp(attribute,"turn_time_ms")==0) return true;
@@ -101,6 +108,12 @@ public:
 
   int callfunc(char* funcname, char* raw_args) { 
     // Since this is a test host, it doesn't actually do anything
+    if (strcmp(funcname,"no_arg_result_int")==0) { no_arg_result_int(); return 200; }
+    if (strcmp(funcname,"no_arg_result_bool")==0) { no_arg_result_bool(); return 200; }
+    if (strcmp(funcname,"no_arg_result_str")==0) { no_arg_result_str(); return 200; }
+    if (strcmp(funcname,"no_arg_result_float")==0) { no_arg_result_float(); return 200; }
+    if (strcmp(funcname,"no_arg_result_T")==0) { no_arg_result_T(); return 200; }
+
     return 200;
   }
 
