@@ -88,16 +88,41 @@ class DeviceProxy(object):
 
     def configure_func(self, name, funcsig):
         funcname = funcsig[:funcsig.find(" ")]
+        funchelp = funcsig[funcsig.find(" - ")+3:]
+
         funcspec = funcsig[:funcsig.find(" - ")]
         funcspec = funcspec[funcspec.find(" ")+1:]
-        funchelp = funcsig[funcsig.find(" - ")+3:]
         if funcspec == "->":
             args = []
             result = []
         else:
-            args = "unparsed"
-            result = "unparsed"
-        #print funcname +"::" + funcspec +"::" +funchelp
+            callsig, returnsig = funcspec.split("->")
+            args = callsig.strip()
+            result = returnsig.lstrip()
+            if (" " in args) or (" " in result):
+                args = "UNPARSED"
+                result = "UNPARSED"
+            else:
+                parsed = args.split(":")
+                if len(parsed) > 2:
+                    parsed = "UNPARSED"
+                elif len(args) == 0:
+                    parsed = []
+                else:
+                    arg, argtype = parsed
+                    parsed = [ (arg, argtype) ]
+                args = parsed
+
+                parsed = result.split(":")
+                if len(parsed) > 2:
+                    parsed = "UNPARSED"
+                elif len(result) == 0:
+                    parsed = []
+                else:
+                    arg, argtype = parsed
+                    parsed = [ (arg, argtype) ]
+                result = parsed
+
         self.funcs[name] = { "name" : funcname,
                              "spec" : { "args": args,
                                        "result": result },
@@ -134,5 +159,4 @@ for name in p.funcs.keys():
     code, message, funcsig  = io.call("help %s" % name)
     p.configure_func(name, funcsig)
 
-print p
-
+pprint.pprint(p,width=200)
