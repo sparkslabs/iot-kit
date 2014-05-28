@@ -21,8 +21,13 @@ buildrpm:
 deb:
 	debuild -uc -us
 
+use:
+	sudo dpkg -i ../python-iotoy_*.deb
+
 clean:
 	$(PYTHON) setup.py clean
 	dh_clean
 	rm -rf build/ MANIFEST
 	find . -name '*.pyc' -delete
+	rm ../python-iotoy_*.dsc ../python-iotoy_*.tar.gz ../python-iotoy_*.deb ../python-iotoy_*.build ../python-iotoy_*.changes
+

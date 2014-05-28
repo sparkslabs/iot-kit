@@ -2,9 +2,6 @@
 
 import os, select, time, pprint
 
-default_host = "./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio"
-default_host = "./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio"
-
 def parse_hostline(hostline):
     assert (hostline[-1] == "\n")
     hostline = hostline[:-1] # trim EOL
@@ -44,19 +41,6 @@ class commandio(object):
     def call(self, data):
         result = self.send_recv(data)
         return parse_hostline(result)
-
-try:
-    os.stat("./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio")
-except OSError:
-    print "=================================================================="
-    print
-    print "  You need to build the TestHostStdio example for this to work..."
-    print
-    print "cd ./libraries/IOToy/examples/TestHostTiny/"
-    print "make -f Makefile_mock"
-    print
-    print "=================================================================="
-    raise
 
 class DeviceProxy(object):
     def __init__(self,device=None):
@@ -140,20 +124,20 @@ class DeviceProxy(object):
                 "attrs" : self.attrs}
 
     def introspect_device(self):
-        startline = io.recv() # Initial startline may fail - eg device was connected some time beforehand
+        startline = self.device.recv() # Initial startline may fail - eg device was connected some time beforehand
         code, message, data = parse_hostline(startline)
 
         if code == 200:
             self.set_name(data)
 
-        code, message, funclist  = io.call("funcs")
-        code, message, attrlist  = io.call("attrs")
+        code, message, funclist  = self.device.call("funcs")
+        code, message, attrlist  = self.device.call("attrs")
 
         self.configure_funclist(funclist)
         self.configure_attrlist(attrlist)
 
         for name in self.funcs.keys():
-            code, message, funcsig  = io.call("help %s" % name)
+            code, message, funcsig  = self.device.call("help %s" % name)
             self.configure_func(name, funcsig)
 
     def __getattribute__(self, name):
@@ -273,133 +257,6 @@ class DeviceProxy(object):
             else:
                 super(DeviceProxy, self).__getattribute__(name)
 
-io = commandio(default_host)
-p = DeviceProxy(device=io)
-p.introspect_device()
-
-print p
-
-print
-
-print "p.drive_forward_time_ms", repr(p.drive_forward_time_ms)
-p.drive_forward_time_ms = 1000
-print "p.drive_forward_time_ms", repr(p.drive_forward_time_ms)
-assert p.drive_forward_time_ms == 1000
-
-print
-
-print "p.turn_time_ms", repr(p.turn_time_ms)
-p.turn_time_ms = 500
-print "p.turn_time_ms", repr(p.turn_time_ms)
-
-assert p.turn_time_ms == 500
-
-try:
-    p.turn_time_ms = True
-except ValueError as e:
-    assert e.message == "turn_time_ms is an int, but you provided True which is 'bool'"
-    print "Successfully caught attempt to put a bool into an int"
-
-try:
-    p.turn_time_ms = 1.1
-except ValueError as e:
-    if e.message != "turn_time_ms is an int, but you provided 1.1 which is 'float'":
-        raise e
-    print "Successfully caught attempt to put a float into an int"
-
-try:
-    p.turn_time_ms = 'hello'
-except ValueError as e:
-    if e.message != "turn_time_ms is an int, but you provided 'hello' which is 'str'":
-        raise e
-    print "Successfully caught attempt to put a str into an int"
-
-if default_host == "./libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio":
-
-    print p.barecommand
-    p.barecommand()
-
-    p.one_arg_int
-    p.one_arg_int(1)
-    try:
-        p.one_arg_int(1.1)
-    except ValueError as e:
-        if e.message != "Should be int, recieved float":
-           raise
-        print "Successfully caught bad argument:", e
-
-    try:
-        p.one_arg_int("hello")
-    except ValueError as e:
-        if e.message != "Should be int, recieved str":
-           raise
-        print "Successfully caught bad argument:", e
-
-    try:
-        p.one_arg_int(True)
-    except ValueError as e:
-        if e.message != "Should be int, recieved bool":
-           raise
-        print "Successfully caught bad argument:", e
-
-
-
-    p.one_arg_str("hello")
-    try:
-        p.one_arg_str(1)
-    except ValueError as e:
-        if e.message != "Should be str, recieved int":
-           raise
-        print "Successfully caught bad argument:", e
-
-    try:
-        print p.one_arg_str(1.1)
-    except ValueError as e:
-        if e.message != "Should be str, recieved float":
-           raise
-        print "Successfully caught bad argument:", e
-
-    try:
-        p.one_arg_str(True)
-    except ValueError as e:
-        if e.message != "Should be str, recieved bool":
-           raise
-        print "Successfully caught bad argument:", e
-
-    p.one_arg_float(1.1)
-    try:
-        p.one_arg_float(1)
-    except ValueError as e:
-        if e.message != "Should be float, recieved int":
-           raise
-        print "Successfully caught bad argument:", e
-
-    try:
-        p.one_arg_float("hello")
-    except ValueError as e:
-        if e.message != "Should be float, recieved str":
-           raise
-        print "Successfully caught bad argument:", e
-
-    try:
-        p.one_arg_float(True)
-    except ValueError as e:
-        if e.message != "Should be float, recieved bool":
-           raise
-        print "Successfully caught bad argument:", e
-
-    print p.no_arg_result_int()
-    print p.no_arg_result_bool()
-    print p.no_arg_result_str()
-    print p.no_arg_result_float()
-    print p.no_arg_result_T()
-
-if default_host == "./libraries/IOToy/examples/BotHostTiny/build-stdio/BotHostStdio":
-    print p.forward()
-    print p.backward()
-    print p.left()
-    print p.right()
-    print p.on()
-    print p.off()
-
-
+if __name__ == "__main__":
+    print "This code does not have an internal diagnostic. See the examples"
+    print "directory for one"
