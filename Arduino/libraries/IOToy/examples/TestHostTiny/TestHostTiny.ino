@@ -63,7 +63,7 @@ public:
     if (strcmp(name,"no_arg_result_float")==0) return "no_arg_result_float -> result:float - test, one arg, float";
     if (strcmp(name,"no_arg_result_T")==0) return "no_arg_result_T -> result:T - test, one arg, generic type";
 
-    if (strcmp(name,"one_arg_int_result_int")==0) return "one_arg_int_result_int -> result:int - test, one arg, one result, both ints";
+    if (strcmp(name,"one_arg_int_result_int")==0) return "one_arg_int_result_int myarg:int -> result:int - test, one arg, one result, both ints";
     return "-";
   }
 
@@ -106,6 +106,12 @@ public:
     return 404;
   }
 
+  int one_arg_int_result_int(char *raw_value) {
+      int value = atoi(raw_value);
+      itoa (value, result_string, 10);
+      return 200;
+  }
+
   int callfunc(char* funcname, char* raw_args) { 
     // Since this is a test host, it doesn't actually do anything
     if (strcmp(funcname,"no_arg_result_int")==0) { no_arg_result_int(); return 200; }
@@ -113,6 +119,7 @@ public:
     if (strcmp(funcname,"no_arg_result_str")==0) { no_arg_result_str(); return 200; }
     if (strcmp(funcname,"no_arg_result_float")==0) { no_arg_result_float(); return 200; }
     if (strcmp(funcname,"no_arg_result_T")==0) { no_arg_result_T(); return 200; }
+    if (strcmp(funcname,"one_arg_int_result_int")==0)  { one_arg_int_result_int(raw_args); return 200; }
 
     return 200;
   }
@@ -136,4 +143,3 @@ void loop()
 {
   MyCommandHost.run_host();
 }
-

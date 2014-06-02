@@ -4,6 +4,8 @@ import os
 import pprint
 import json
 import time
+import traceback
+import sys
 
 import threading
 import flask
@@ -55,7 +57,7 @@ class DeviceWebInterface(threading.Thread):
                         if attrtype=="int":
                             value = int(value)
                         if attrtype=="float":
-                            value = int(value)
+                            value = float(value)
                         if attrtype=="str":
                             value = str(value)
                         if attrtype=="bool":
@@ -78,13 +80,31 @@ class DeviceWebInterface(threading.Thread):
                 global request
                 try:
                     if request.method == "GET":
-                        return "get func: %s" % json.dumps(funcspec)
+                        funcspec["type"] = "iotoy.function"
+                        return flask.jsonify(funcspec)
+#                        return "get func: %s" % json.dumps(funcspec)
                     elif request.method == "PUT":
                         raise Exception("PUT NOT SUPPORTED FOR FUNCTIONS")
                     elif request.method == "POST":
                         value = request.data
                         if funcspec["spec"]["args"]!=[]:
-                            pass
+                            value = request.data
+                            func_args = funcspec["spec"]["args"]
+                            assert len(func_args) == 1 # For the moment, only handle one argument per function
+                            arg_name, arg_type = func_arg = func_args[0]
+                            if arg_type=="int":
+                                value = int(value)
+                            elif arg_type=="float":
+                                value = float(value)
+                            elif arg_type=="str":
+                                value = str(value)
+                            elif arg_type=="bool":
+                                value = True if value == "True" else False
+                            elif arg_type=="T":
+                                value = str(value)
+                            else:
+                                raise NotImplementedError("Function calling with *that* argument type not yet handled :-)")
+                            args = [value]
                         else:
                             args = []
                             #if attrtype=="int":
@@ -100,8 +120,11 @@ class DeviceWebInterface(threading.Thread):
                         # x = getattr(self.thing, attr)
                         result = getattr(self.thing, func)(*args)
                         return "callfunction: %s(%s) -> %s " % (str(func), str(value), repr(result))
+
                     return "FUNC FAILED!"
                 except Exception as e:
+                    print "FAILURE!"
+                    traceback.print_exc()
                     return "FUNC *DIED* !" + repr(e)
 
             handle_func.func_name = "handle_%s" % func
@@ -119,7 +142,7 @@ class DeviceWebInterface(threading.Thread):
 
         # Basic test of method / stem creation -- To be deleted
         def rootspec():
-            return json.dumps(self.devinfo,indent=4)
+            return flask.jsonify(self.devinfo)
         app.route("/", methods=["GET"])(rootspec)
 
         self.ready = True
@@ -149,16 +172,113 @@ proxy.introspect_device()
 
 dev_interface = DeviceWebInterface(proxy)
 dev_interface.start()
+
 dev_interface.wait_server_start()
 
-# Wait for the web interface thread to exit...
+# ==================================================================================
+#
+# CLIENT SIDE TESTS
+#
+# ==================================================================================
+
+import requests
+print "Running self diagnostic"
+for value in 1000,2000,3000,4000:
+    response = requests.put("http://127.0.0.1:5000/turn_time_ms", data=str(value))
+    assert response.content == ( "set_attr: 'turn_time_ms' to %d, result %d.. " % (value, value))
+    assert response.status_code == 200
+
+for value in 1000,2000,3000,4000,5000:
+    response = requests.put("http://127.0.0.1:5000/drive_forward_time_ms", data=str(value))
+    assert response.content == ( "set_attr: 'drive_forward_time_ms' to %d, result %d.. " % (value, value))
+    assert response.status_code == 200
+
+response = requests.get("http://127.0.0.1:5000/turn_time_ms")
+assert response.content == "value: 4000"
+
+response = requests.get("http://127.0.0.1:5000/drive_forward_time_ms")
+assert response.content == "value: 5000"
+
+# This behaviour will change (!)
+for i in "attrs","funcs","devicename":
+    response = requests.get("http://127.0.0.1:5000/%s" % i)
+    response.content == i
+
+device_description_raw = requests.get("http://127.0.0.1:5000/")
+print repr(device_description_raw.content)
+print device_description_raw.headers
+print device_description_raw.headers.get("content-type", None)
+assert device_description_raw.headers.get("content-type", None) == "application/json"
+device_description = json.loads(device_description_raw.content)
+print device_description.keys()
+print device_description["funcs"].keys()
+
+func_names = device_description["funcs"].keys()
+no_args = []
+funcs_with_args = []
+funcs_with_result = []
+for func_name in func_names:
+    response = requests.get("http://127.0.0.1:5000/%s" % func_name)
+    assert response.headers.get("content-type", None) == "application/json"
+    func_description = json.loads(response.content)
+    print
+    print "FUNCTION: ", func_name
+    pprint.pprint(func_description)
+    if func_description["spec"]["args"] == []:
+        no_args.append(func_description)
+    else:
+        funcs_with_args.append(func_description)
+
+    if func_description["spec"]["result"] != []:
+        funcs_with_result.append(func_description)
+
+
+print no_args
+for func in no_args:
+    func_name = func["name"]
+    response = requests.post("http://127.0.0.1:5000/%s" % func_name, data="")
+    print "FUNC CALL", func_name, (20-len(func_name))*" ", "::",
+    print repr(response.content)
+    print
+
+#print funcs_with_args
+default_args = { # Values to pass in as default values
+    "bool" : True,
+    "int" : 73,
+    "T": "3+4j",
+    "str": "FTW",
+    "float" : 3.14
+}
+for func in funcs_with_args:
+    func_name = func["name"]
+    func_args = func["spec"]["args"]
+    print func_name, repr(func_args)
+    assert len(func_args) == 1 # For the moment, only handle one argument per function
+    arg_name, arg_type = func_arg = func_args[0]
+    arg_value_to_send = default_args[arg_type]
+    response = requests.post("http://127.0.0.1:5000/%s" % func_name, data=str(arg_value_to_send))
+    print "FUNC CALL", func_name, (20-len(func_name))*" ", "::",
+    print repr(response.content)
+    print
+
+print funcs_with_result
+for func in funcs_with_result:
+    func_name = func["name"]
+    print func_name, func["spec"]["result"]
+    if func["spec"]["args"]==[]:
+        callarg = ""
+    else:
+        func_args = func["spec"]["args"]
+        arg_name, arg_type = func_arg = func_args[0]
+        callarg = str(default_args[arg_type])
+
+    response = requests.post("http://127.0.0.1:5000/%s" % func_name, data=callarg)
+    print "FUNC CALL", func_name, (20-len(func_name))*" ", "::",
+    print repr(response.content)
+    print
+
+print "Self diagnostic success"
+
+# Wait for the web interface thread to exit
 while True:
     time.sleep(1)
-
-# Shell tests:
-"""
-michael@linux:~$ for i in 1000 2000 3000 4000; do (echo -e "PUT /turn_time_ms HTTP/1.0\nContent-Length: 4\n"; echo -n "$i")|netcat 127.0.0.1 5000 ; echo; done
-michael@linux:~$ for i in turn_time_ms test attrs funcs devicename; do echo -e "GET /$i HTTP/1.0\n\n" |netcat 127.0.0.1 5000 ; echo; done
-michael@linux:~$ for i in 1000 2000 3000 4000; do (echo -e "PUT /drive_forward_time_ms HTTP/1.0\nContent-Length: 4\n"; echo -n "$i")|netcat 127.0.0.1 5000 ; echo; done
-michael@linux:~$ echo -e "GET / HTTP/1.0\n\n"| netcat 127.0.0.1 5000; echo; for i in 1000; do (echo -e "GET /barecommand HTTP/1.0\n\n"; echo -n "1")|netcat 127.0.0.1 5000 ; echo; done ; for i in barecommand no_arg_result_int no_arg_result_bool no_arg_result_str no_arg_result_float no_arg_result_T; do (echo -e "POST /$i HTTP/1.0\nContent-Length: 0\n\n"; echo -n "")|netcat 127.0.0.1 5000 ; echo; done
-"""
