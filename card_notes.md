@@ -4,6 +4,7 @@
 
 **NB** this isn't everything that's been done - just what's been done since we started this approach to tracking.
 
+* WebAPI spec is well defined
 * TestHostTiny functions support all basic types
 * TestHostTiny supports attributes of all basic types
 * Call and return arguments are type checked/enforced
