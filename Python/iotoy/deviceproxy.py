@@ -140,6 +140,19 @@ class DeviceProxy(object):
             code, message, funcsig  = self.device.call("help %s" % name)
             self.configure_func(name, funcsig)
 
+        for name in self.attrs.keys():
+            code, message, attrsig = self.device.call("help %s" % name)
+            if code == 200:
+                attrhelp = attrsig[attrsig.find(" - ")+3:]
+                attrtype = attrsig[:attrsig.find(" - ")]
+
+                self.attrs[name]["help"] = attrhelp
+                print "attr", name, "assert", self.attrs[name]["type"], "==", attrtype
+                assert self.attrs[name]["type"] == attrtype
+
+            print "attrsig", name, attrsig
+            #self.configure_func(name, funcsig)
+
     def __getattribute__(self, name):
         if (name in ["__repr__", "devinfo", "introspect_device", "configure_func",
                      "configure_attrlist", "configure_funclist", "set_name", "__init__",

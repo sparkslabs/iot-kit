@@ -217,13 +217,15 @@ assumed to be qualified as being from the iotoy.org/types/ namespace
 
 Put will generally use the same format as GET representations
 
-  * Client - will consist of PUTing a value to the site
+  * Client - will consist of PUTing a value to the site - at present this is the bare value, but
+    it should really be a resource
   * Site - will consist of returning the GET value for the attribute or an exception
 
 ## POST Representations / Behaviour
 
 POST representations have two halves:
 
-  * Client - will consist of posting the arguments to the site
-  * Site - will consist of posting results to the client
+  * Client - currently this consists of sending a bare value as the body of the POST request
+  * Site - the response is a json value broadly matching that from a GET request, without the
+    provision of an href. Additionally there is an extra return type of "None" (aka null)
 

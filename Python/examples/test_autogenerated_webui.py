@@ -46,12 +46,14 @@ class DeviceWebInterface(threading.Thread):
         for attr in self.devinfo["attrs"]:
             attrtype = self.devinfo["attrs"][attr]["type"]
             self.devinfo["attrs"][attr]["href"] = "/"+attr
-            def handle_attr(attr=attr,attrtype=attrtype):
+            attrhelp = self.devinfo["attrs"][attr]["help"]
+            def handle_attr(attr=attr,attrtype=attrtype,attrhelp=attrhelp):
                 global request
                 try:
                     if request.method == "GET":
                         return flask.jsonify({ "value": getattr(self.thing, attr),
-                                               "type": "iotoy.%s" % attrtype,
+                                               "type": "iotoy.org/types/%s" % attrtype,
+                                               "help": attrhelp,
                                                "href":"/"+attr })
                     elif request.method == "PUT":
                         value = request.data
@@ -65,8 +67,14 @@ class DeviceWebInterface(threading.Thread):
                             value = True if value == "True" else False
 
                         setattr(self.thing, attr, value)
+
                         x = getattr(self.thing, attr)
-                        return "set_attr: %s to %s, result %s.. " % (repr(attr), repr(value), repr(x))
+                        return flask.jsonify({ "value": x,
+                                               "type": "iotoy.org/types/%s" % attrtype,
+                                               "help": attrhelp,
+                                               "href":"/"+attr })
+
+#                        return "set_attr: %s to %s, result %s.. " % (repr(attr), repr(value), repr(x))
                     return "I FAILED!"
                 except Exception as e:
                     return "I *DIED* !" + repr(e)
@@ -77,12 +85,14 @@ class DeviceWebInterface(threading.Thread):
 
         for func in self.devinfo["funcs"]:
             funcspec = self.devinfo["funcs"][func]
+            funcspec["type"] = "iotoy.org/types/function"
+            funcspec["href"] = "/"+funcspec["value"]["name"]
+            funcspec["help"] = "/"+funcspec["value"]["help"]
+            del funcspec["value"]["help"]
             def handle_func(func=func,funcspec=funcspec):
                 global request
                 try:
                     if request.method == "GET":
-                        funcspec["type"] = "iotoy.function"
-                        funcspec["href"] = "/"+funcspec["value"]["name"]
                         return flask.jsonify(funcspec)
                     elif request.method == "PUT":
                         raise Exception("PUT NOT SUPPORTED FOR FUNCTIONS")
@@ -110,7 +120,19 @@ class DeviceWebInterface(threading.Thread):
                             args = []
 
                         result = getattr(self.thing, func)(*args)
-                        return "callfunction: %s(%s) -> %s " % (str(func), str(value), repr(result))
+                        result_spec = funcspec["value"]["spec"]["result"]
+                        if len(result_spec) == 0:
+                            return_value = { "type": "iotoy.org/types/null",
+                                             "value" : None
+                                           }
+                        else:
+                            resultname, resulttype = result_spec[0]
+                            return_value = { "type" : resulttype,
+                                             "name" : resultname,
+                                             "value" : result
+                                           }
+                        return flask.jsonify(return_value)
+#                        return "callfunction: %s(%s) -> %s " % (str(func), str(value), repr(result))
 
                     return "FUNC FAILED!"
                 except Exception as e:
@@ -131,7 +153,10 @@ class DeviceWebInterface(threading.Thread):
             app.route("/"+stem, methods=["GET"])(test)
 
         def devinfo_spec():
-            return flask.jsonify({"type":"devinfo", "href" : "/devinfo", "value": self.devinfo})
+            return flask.jsonify({"type":"iotoy.org/type/json",
+                                  "href" : "/devinfo",
+                                  "help" : "Device description",
+                                  "value": self.devinfo})
         app.route("/devinfo", methods=["GET"])(devinfo_spec)
 
         # Basic test of method / stem creation -- To be deleted
@@ -140,7 +165,9 @@ class DeviceWebInterface(threading.Thread):
             tld += list(self.devinfo["funcs"].keys())
             tld += list(self.devinfo["attrs"].keys())
             tld.append("devinfo")
-            result = { "type": "dir",
+            result = { "type": "iotoy.org/type/dir",
+                       "href" : "/",
+                       "help" : self.devinfo["devicename"],
                        "value": tld
                       }
             pprint.pprint(result)
@@ -187,51 +214,69 @@ import requests
 print "Running self diagnostic"
 for value in 1000,2000,3000,4000:
     response = requests.put("http://127.0.0.1:5000/turn_time_ms", data=str(value))
-    assert response.content == ( "set_attr: 'turn_time_ms' to %d, result %d.. " % (value, value))
+
     assert response.status_code == 200
+    assert response.headers.get("content-type", None) == "application/json"
+    result = json.loads(response.content)
+    assert result["value"] == value
+    assert result["type"] == "iotoy.org/types/int"
+
 
 for value in 1000,2000,3000,4000,5000:
     response = requests.put("http://127.0.0.1:5000/drive_forward_time_ms", data=str(value))
-    assert response.content == ( "set_attr: 'drive_forward_time_ms' to %d, result %d.. " % (value, value))
+
     assert response.status_code == 200
+    assert response.headers.get("content-type", None) == "application/json"
+    result = json.loads(response.content)
+    assert result["value"] == value
+    assert result["type"] == "iotoy.org/types/int"
 
 response = requests.get("http://127.0.0.1:5000/turn_time_ms")
 assert response.headers.get("content-type", None) == "application/json"
 result = json.loads(response.content)
 assert result["value"] == 4000
-assert result["type"] == "iotoy.int"
+assert result["type"] == "iotoy.org/types/int"
 
 response = requests.get("http://127.0.0.1:5000/drive_forward_time_ms")
 assert response.headers.get("content-type", None) == "application/json"
 result = json.loads(response.content)
 assert result["value"] == 5000
-assert result["type"] == "iotoy.int"
+assert result["type"] == "iotoy.org/types/int"
 
 response = requests.get("http://127.0.0.1:5000/ratio")        # {'type': 'float'}
 assert response.status_code == 200
 assert response.headers.get("content-type", None) == "application/json"
 result = json.loads(response.content)
 assert result["value"] == 0.0
-assert result["type"] == "iotoy.float"
+assert result["type"] == "iotoy.org/types/float"
 
 response = requests.put("http://127.0.0.1:5000/ratio", data=str(3.1459))
 assert response.status_code == 200
-assert response.content == "set_attr: 'ratio' to 3.1459, result 3.1459.. "
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == 3.1459
+assert result["type"] == "iotoy.org/types/float"
 
 response = requests.get("http://127.0.0.1:5000/some_flag")    # {'type': 'bool'}
 assert response.status_code == 200
 assert response.headers.get("content-type", None) == "application/json"
 result = json.loads(response.content)
 assert result["value"] == True
-assert result["type"] == "iotoy.bool"
+assert result["type"] == "iotoy.org/types/bool"
 
 response = requests.put("http://127.0.0.1:5000/some_flag", data=str(True))
 assert response.status_code == 200
-assert response.content == "set_attr: 'some_flag' to True, result True.. "
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == True
+assert result["type"] == "iotoy.org/types/bool"
 
 response = requests.put("http://127.0.0.1:5000/some_flag", data=str(False))
 assert response.status_code == 200
-assert response.content == "set_attr: 'some_flag' to False, result False.. "
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == False
+assert result["type"] == "iotoy.org/types/bool"
 
 
 response = requests.get("http://127.0.0.1:5000/str_id")       # {'type': 'str'}
@@ -239,16 +284,44 @@ assert response.status_code == 200
 assert response.headers.get("content-type", None) == "application/json"
 result = json.loads(response.content)
 assert result["value"] == "default"
-assert result["type"] == "iotoy.str"
+assert result["type"] == "iotoy.org/types/str"
 
 response = requests.put("http://127.0.0.1:5000/str_id", data="random string")
+
 assert response.status_code == 200
-assert response.content == "set_attr: 'str_id' to 'random string', result 'random string'.. "
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == 'random string'
+assert result["type"] == "iotoy.org/types/str"
+
 
 # This behaviour will change (!)
 for i in "attrs","funcs","devicename":
     response = requests.get("http://127.0.0.1:5000/%s" % i)
     response.content == i
+
+
+# --------------------------------------------------
+#
+# Get the descriptions of all top level resources
+#
+# --------------------------------------------------
+response = requests.get("http://127.0.0.1:5000/")
+assert response.status_code == 200
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["type"] == "iotoy.org/type/dir"
+assert result["href"] == "/"
+assert type(result["value"] == list)
+top_level_resources = result["value"]
+for resource in top_level_resources:
+    response = requests.get("http://127.0.0.1:5000/"+resource)
+    assert response.status_code == 200
+    assert response.headers.get("content-type", None) == "application/json"
+    result = json.loads(response.content)
+    print "RESOURCE:", resource
+    pprint.pprint(result)
+    print
 
 device_description_raw = requests.get("http://127.0.0.1:5000/devinfo")
 print repr(device_description_raw.content)
@@ -259,6 +332,13 @@ device_description = json.loads(device_description_raw.content)
 device_description = device_description["value"]
 print device_description.keys()
 print device_description["funcs"].keys()
+
+
+# ----------------------------------------------------------------------
+#
+# Get the descriptions of all functions - from the device description
+#
+# ----------------------------------------------------------------------
 
 func_names = device_description["funcs"].keys()
 no_args = []
@@ -280,6 +360,11 @@ for func_name in func_names:
         funcs_with_result.append(func_description)
 
 
+# --------------------------------------------------
+#
+# Call functions which take no arguments
+#
+# --------------------------------------------------
 print no_args
 for func in no_args:
     func_name = func["value"]["name"]
@@ -288,6 +373,11 @@ for func in no_args:
     print repr(response.content)
     print
 
+# --------------------------------------------------
+#
+# Call all functions which take a single argument
+#
+# --------------------------------------------------
 #print funcs_with_args
 default_args = { # Values to pass in as default values
     "bool" : True,
@@ -308,6 +398,12 @@ for func in funcs_with_args:
     print repr(response.content)
     print
 
+
+# --------------------------------------------------
+#
+# Call all functions which produce a result
+#
+# --------------------------------------------------
 print funcs_with_result
 for func in funcs_with_result:
     func_name = func["value"]["name"]

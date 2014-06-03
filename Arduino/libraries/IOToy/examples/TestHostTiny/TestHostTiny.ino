@@ -65,7 +65,7 @@ public:
 
     if (strcmp(name,"ratio")==0) return "float - Sample float attribute";
     if (strcmp(name,"some_flag")==0) return "bool - Sample bool attribute";
-    if (strcmp(name,"str_id")==0) return "int - Sample str attribute";
+    if (strcmp(name,"str_id")==0) return "str - Sample str attribute";
 
     if (strcmp(name,"barecommand")==0) return "barecommand -> - test, basic command, no arg/result";
     if (strcmp(name,"one_arg_int")==0) return "one_arg_int myarg:int -> - test, one arg, integer";
