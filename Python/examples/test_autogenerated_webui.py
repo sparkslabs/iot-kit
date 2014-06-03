@@ -46,12 +46,13 @@ class DeviceWebInterface(threading.Thread):
         for attr in self.devinfo["attrs"]:
             attrtype = self.devinfo["attrs"][attr]["type"]
             self.devinfo["attrs"][attr]["href"] = "/"+attr
-            self.devinfo["attrs"][attr]["methods"] = ["PUT","GET"]
             def handle_attr(attr=attr,attrtype=attrtype):
                 global request
                 try:
                     if request.method == "GET":
-                        return "value: %s" % getattr(self.thing, attr)
+                        return flask.jsonify({ "value": getattr(self.thing, attr),
+                                               "type": "iotoy.%s" % attrtype,
+                                               "href":"/"+attr })
                     elif request.method == "PUT":
                         value = request.data
                         if attrtype=="int":
@@ -81,15 +82,15 @@ class DeviceWebInterface(threading.Thread):
                 try:
                     if request.method == "GET":
                         funcspec["type"] = "iotoy.function"
+                        funcspec["href"] = "/"+funcspec["value"]["name"]
                         return flask.jsonify(funcspec)
-#                        return "get func: %s" % json.dumps(funcspec)
                     elif request.method == "PUT":
                         raise Exception("PUT NOT SUPPORTED FOR FUNCTIONS")
                     elif request.method == "POST":
                         value = request.data
-                        if funcspec["spec"]["args"]!=[]:
+                        if funcspec["value"]["spec"]["args"]!=[]:
                             value = request.data
-                            func_args = funcspec["spec"]["args"]
+                            func_args = funcspec["value"]["spec"]["args"]
                             assert len(func_args) == 1 # For the moment, only handle one argument per function
                             arg_name, arg_type = func_arg = func_args[0]
                             if arg_type=="int":
@@ -107,17 +108,7 @@ class DeviceWebInterface(threading.Thread):
                             args = [value]
                         else:
                             args = []
-                            #if attrtype=="int":
-                                #value = int(value)
-                            #if attrtype=="float":
-                                #value = int(value)
-                            #if attrtype=="str":
-                                #value = str(value)
-                            #if attrtype=="bool":
-                                #value = True if value == "True" else False
 
-                        # setattr(self.thing, attr, value)
-                        # x = getattr(self.thing, attr)
                         result = getattr(self.thing, func)(*args)
                         return "callfunction: %s(%s) -> %s " % (str(func), str(value), repr(result))
 
@@ -129,7 +120,6 @@ class DeviceWebInterface(threading.Thread):
 
             handle_func.func_name = "handle_%s" % func
             funcspec["href"] = "/"+func
-            funcspec["methods"] = ["GET","POST"]
 
             app.route(funcspec["href"], methods=["GET","PUT","POST"])(handle_func)
 
@@ -140,9 +130,21 @@ class DeviceWebInterface(threading.Thread):
             test.func_name = stem
             app.route("/"+stem, methods=["GET"])(test)
 
+        def devinfo_spec():
+            return flask.jsonify({"type":"devinfo", "href" : "/devinfo", "value": self.devinfo})
+        app.route("/devinfo", methods=["GET"])(devinfo_spec)
+
         # Basic test of method / stem creation -- To be deleted
         def rootspec():
-            return flask.jsonify(self.devinfo)
+            tld = []
+            tld += list(self.devinfo["funcs"].keys())
+            tld += list(self.devinfo["attrs"].keys())
+            tld.append("devinfo")
+            result = { "type": "dir",
+                       "value": tld
+                      }
+            pprint.pprint(result)
+            return flask.jsonify(result)
         app.route("/", methods=["GET"])(rootspec)
 
         self.ready = True
@@ -194,23 +196,34 @@ for value in 1000,2000,3000,4000,5000:
     assert response.status_code == 200
 
 response = requests.get("http://127.0.0.1:5000/turn_time_ms")
-assert response.content == "value: 4000"
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == 4000
+assert result["type"] == "iotoy.int"
 
 response = requests.get("http://127.0.0.1:5000/drive_forward_time_ms")
-assert response.content == "value: 5000"
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == 5000
+assert result["type"] == "iotoy.int"
 
 response = requests.get("http://127.0.0.1:5000/ratio")        # {'type': 'float'}
 assert response.status_code == 200
-assert response.content == "value: 0.0"
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == 0.0
+assert result["type"] == "iotoy.float"
 
 response = requests.put("http://127.0.0.1:5000/ratio", data=str(3.1459))
 assert response.status_code == 200
 assert response.content == "set_attr: 'ratio' to 3.1459, result 3.1459.. "
 
-
 response = requests.get("http://127.0.0.1:5000/some_flag")    # {'type': 'bool'}
 assert response.status_code == 200
-assert response.content == "value: True"
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == True
+assert result["type"] == "iotoy.bool"
 
 response = requests.put("http://127.0.0.1:5000/some_flag", data=str(True))
 assert response.status_code == 200
@@ -223,7 +236,10 @@ assert response.content == "set_attr: 'some_flag' to False, result False.. "
 
 response = requests.get("http://127.0.0.1:5000/str_id")       # {'type': 'str'}
 assert response.status_code == 200
-assert response.content == "value: default"
+assert response.headers.get("content-type", None) == "application/json"
+result = json.loads(response.content)
+assert result["value"] == "default"
+assert result["type"] == "iotoy.str"
 
 response = requests.put("http://127.0.0.1:5000/str_id", data="random string")
 assert response.status_code == 200
@@ -234,12 +250,13 @@ for i in "attrs","funcs","devicename":
     response = requests.get("http://127.0.0.1:5000/%s" % i)
     response.content == i
 
-device_description_raw = requests.get("http://127.0.0.1:5000/")
+device_description_raw = requests.get("http://127.0.0.1:5000/devinfo")
 print repr(device_description_raw.content)
 print device_description_raw.headers
 print device_description_raw.headers.get("content-type", None)
 assert device_description_raw.headers.get("content-type", None) == "application/json"
 device_description = json.loads(device_description_raw.content)
+device_description = device_description["value"]
 print device_description.keys()
 print device_description["funcs"].keys()
 
@@ -254,18 +271,18 @@ for func_name in func_names:
     print
     print "FUNCTION: ", func_name
     pprint.pprint(func_description)
-    if func_description["spec"]["args"] == []:
+    if func_description["value"]["spec"]["args"] == []:
         no_args.append(func_description)
     else:
         funcs_with_args.append(func_description)
 
-    if func_description["spec"]["result"] != []:
+    if func_description["value"]["spec"]["result"] != []:
         funcs_with_result.append(func_description)
 
 
 print no_args
 for func in no_args:
-    func_name = func["name"]
+    func_name = func["value"]["name"]
     response = requests.post("http://127.0.0.1:5000/%s" % func_name, data="")
     print "FUNC CALL", func_name, (20-len(func_name))*" ", "::",
     print repr(response.content)
@@ -280,8 +297,8 @@ default_args = { # Values to pass in as default values
     "float" : 3.14
 }
 for func in funcs_with_args:
-    func_name = func["name"]
-    func_args = func["spec"]["args"]
+    func_name = func["value"]["name"]
+    func_args = func["value"]["spec"]["args"]
     print func_name, repr(func_args)
     assert len(func_args) == 1 # For the moment, only handle one argument per function
     arg_name, arg_type = func_arg = func_args[0]
@@ -293,12 +310,12 @@ for func in funcs_with_args:
 
 print funcs_with_result
 for func in funcs_with_result:
-    func_name = func["name"]
-    print func_name, func["spec"]["result"]
-    if func["spec"]["args"]==[]:
+    func_name = func["value"]["name"]
+    print func_name, func["value"]["spec"]["result"]
+    if func["value"]["spec"]["args"]==[]:
         callarg = ""
     else:
-        func_args = func["spec"]["args"]
+        func_args = func["value"]["spec"]["args"]
         arg_name, arg_type = func_arg = func_args[0]
         callarg = str(default_args[arg_type])
 
@@ -312,3 +329,7 @@ print "Self diagnostic success"
 # Wait for the web interface thread to exit
 while True:
     time.sleep(1)
+
+"""
+for i in barecommand one_arg_T no_arg_result_int no_arg_result_bool no_arg_result_T one_arg_int_result_int no_arg_result_str one_arg_int one_arg_bool no_arg_result_float one_arg_str one_arg_float str_id turn_time_ms drive_forward_time_ms some_flag ratio devinfo ; do  echo -e "GET /$i HTTP/1.0\n\n" |netcat 127.0.0.1 5000; echo; echo; done|less
+"""

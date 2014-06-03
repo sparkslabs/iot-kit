@@ -109,10 +109,10 @@ class DeviceProxy(object):
                     parsed = [ (arg, argtype) ]
                 result = parsed
 
-        self.funcs[name] = { "name" : funcname,
-                             "spec" : { "args": args,
-                                       "result": result },
-                             "help" : funchelp
+        self.funcs[name] = { "value" :{ "name" : funcname,
+                                        "spec" : { "args": args,
+                                                   "result": result },
+                                        "help" : funchelp }
                            }
 
     def __repr__(self):
@@ -148,9 +148,9 @@ class DeviceProxy(object):
             return x
         else:
             if name in self.funcs.keys():
-                if len(self.funcs[name]["spec"]["args"])==0:
-                    if len(self.funcs[name]["spec"]["result"])==1:
-                        resultname, resulttype = self.funcs[name]["spec"]["result"][0]
+                if len(self.funcs[name]["value"]["spec"]["args"])==0:
+                    if len(self.funcs[name]["value"]["spec"]["result"])==1:
+                        resultname, resulttype = self.funcs[name]["value"]["spec"]["result"][0]
                     else:
                         resultname, resulttype = None, None
 
@@ -167,10 +167,10 @@ class DeviceProxy(object):
                                 result = float(result)
                         return result
 
-                elif len(self.funcs[name]["spec"]["args"])==1:
-                    argname, argtype = self.funcs[name]["spec"]["args"][0]
-                    if len(self.funcs[name]["spec"]["result"])==1:
-                        resultname, resulttype = self.funcs[name]["spec"]["result"][0]
+                elif len(self.funcs[name]["value"]["spec"]["args"])==1:
+                    argname, argtype = self.funcs[name]["value"]["spec"]["args"][0]
+                    if len(self.funcs[name]["value"]["spec"]["result"])==1:
+                        resultname, resulttype = self.funcs[name]["value"]["spec"]["result"][0]
                     else:
                         resultname, resulttype = None, None
 
