@@ -44,6 +44,10 @@ class oven_proxy(object):
                               data=json.dumps({"_meta": IOTOY_INT,
                                                "value": value}),
                               headers={'content-type': 'application/json'})
+        print result
+        print result.status_code
+        print result.headers
+        print result.content
         assert result.status_code == 200
         assert result.headers.get("content-type", None) == "application/json"
 

@@ -17,7 +17,7 @@ from iotoy.webinterface import WebInterface
 # CONCRETE WEB INTERFACE FOR THE OVEN SYSTEM PROXY - ADVERTISED VIA MDNS
 #
 ######################################################################
-
+import traceback
 class OvenInterface(WebInterface):
     """\
     Naming convention
@@ -36,12 +36,20 @@ class OvenInterface(WebInterface):
     def PUT__target_temperature(self):
         http_debug(request)
 
-        data = json.loads(request.data)
-        self.thing.set_targettemperature(data["value"])
-        set_to = self.thing.get_targettemperature()
+        try:
+            data = json.loads(request.data)
+            self.thing.set_targettemperature(data["value"])
+            set_to = self.thing.get_targettemperature()
+        except Exception as e:
+            traceback.print_exc()
+
         if set_to == data["value"]:
+            try:
+                value = self.thing.get_targettemperature()
+            except Exception as e:
+                traceback.print_exc()
             return jsonify({"_meta": IOTOY_INT,
-                            "value": self.thing.get_targettemperature()
+                            "value": value
                            })
         else:
             # Gateway error of somekind, setting failed

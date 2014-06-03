@@ -56,7 +56,7 @@ class MockArduino_OvenHost(threading.Thread):
                 if command[0] == "SET":
                     if command[1] == "target":
                         self._target = int(command[2])
-                        self.fake_serial.write("200 target ")
+                        #self.fake_serial.write("200 target ")
                         self.fake_serial.write(str(self._target) + "\n")
                     else:
                         self.fake_serial.write("UNSUPPORTED SET")
