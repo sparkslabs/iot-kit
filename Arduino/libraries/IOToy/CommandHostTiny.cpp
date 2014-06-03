@@ -170,6 +170,10 @@
             Serial.println(F("404:Attribute Not Found:-"));
             return;
           }
+          if (result == 500) {
+            Serial.println(F("500:Bad Value:-"));
+            return;
+          }
           return;
         }
 

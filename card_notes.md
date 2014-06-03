@@ -4,6 +4,8 @@
 
 **NB** this isn't everything that's been done - just what's been done since we started this approach to tracking.
 
+* TestHostTiny functions support all basic types
+* TestHostTiny supports attributes of all basic types
 * Call and return arguments are type checked/enforced
 * Auto-WebAPI handles functions' return values appropriately
 * BUGFIX: TestHostTiny Functions should conform to their calling spec

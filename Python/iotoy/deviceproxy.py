@@ -221,7 +221,6 @@ class DeviceProxy(object):
                         value = False
                     else:
                         raise ValueError("Bool values MUST be 'True' or 'False'")
-                    value = True if value == "True" else False
                 return value
             else:
                 super(DeviceProxy, self).__getattribute__(name)

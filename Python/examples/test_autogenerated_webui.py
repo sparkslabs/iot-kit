@@ -199,6 +199,36 @@ assert response.content == "value: 4000"
 response = requests.get("http://127.0.0.1:5000/drive_forward_time_ms")
 assert response.content == "value: 5000"
 
+response = requests.get("http://127.0.0.1:5000/ratio")        # {'type': 'float'}
+assert response.status_code == 200
+assert response.content == "value: 0.0"
+
+response = requests.put("http://127.0.0.1:5000/ratio", data=str(3.1459))
+assert response.status_code == 200
+assert response.content == "set_attr: 'ratio' to 3.1459, result 3.1459.. "
+
+
+response = requests.get("http://127.0.0.1:5000/some_flag")    # {'type': 'bool'}
+assert response.status_code == 200
+assert response.content == "value: True"
+
+response = requests.put("http://127.0.0.1:5000/some_flag", data=str(True))
+assert response.status_code == 200
+assert response.content == "set_attr: 'some_flag' to True, result True.. "
+
+response = requests.put("http://127.0.0.1:5000/some_flag", data=str(False))
+assert response.status_code == 200
+assert response.content == "set_attr: 'some_flag' to False, result False.. "
+
+
+response = requests.get("http://127.0.0.1:5000/str_id")       # {'type': 'str'}
+assert response.status_code == 200
+assert response.content == "value: default"
+
+response = requests.put("http://127.0.0.1:5000/str_id", data="random string")
+assert response.status_code == 200
+assert response.content == "set_attr: 'str_id' to 'random string', result 'random string'.. "
+
 # This behaviour will change (!)
 for i in "attrs","funcs","devicename":
     response = requests.get("http://127.0.0.1:5000/%s" % i)
