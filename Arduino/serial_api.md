@@ -119,7 +119,6 @@ Where:
           As opposed to non-empty:
           - "set name .\n"
           You can't have an empty attribute or function name.
-
     - int - may be up to +-2**31. If you need more, use more attributes
     - float - IEEE 754 double
     - bool - valid representations of true: 1, true, True, t, T
@@ -129,6 +128,7 @@ Where:
            argument type depends on the attribute.
 
 The upshot of this is that the following are valid responses for attributes and functions:
+
     "200:Help found:int - How long to move forward"
     "200:Help found:int - How long to turn"
     "200:Help found:forward dist:int -> - Move forward for a distance"
