@@ -158,7 +158,7 @@ Addition top level attributes are:
 ### Sample  string representation
 
     {
-      "type" : "iotoy.org/types/string",
+      "type" : "iotoy.org/types/str",
       "href" : "/some_name",
       "help" : "This represents some string, perhaps a name.",
       "value" : "Frank"
@@ -203,7 +203,7 @@ assumed to be qualified as being from the iotoy.org/types/ namespace
 ### Sample Exception representation
 
     {
-      "type" : "iotoy.org/types/string",
+      "type" : "iotoy.org/types/str",
       "href" : "/some_name" ,
       "help" : "This exception generally means...",
       "value" :  { Format here is to be decided, and a work in progress.
