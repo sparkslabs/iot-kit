@@ -15,6 +15,8 @@ import time
 
 from iotoy.deviceproxy import commandio, DeviceProxy
 from iotoy.webinterface import webserver_started, DeviceWebInterface
+from iotoy.discovery import IOTWebService
+
 
 default_host = "../../Arduino/libraries/IOToy/examples/TestHostTiny/build-stdio/TestHostStdio"
 
@@ -49,8 +51,11 @@ dev_interface = DeviceWebInterface(proxy)
 dev_interface.start()
 
 dev_interface.wait_server_start()
+iotservice = IOTWebService(name=proxy.name)
+iotservice.start()
+iotservice.wait_advertised()
 
-print "Device ready"
+print "Device ready - look for %s._iotoy._tcp.local via avahi-browse -r -a" % proxy.name
 
 # Wait for the web interface thread to exit
 while True:

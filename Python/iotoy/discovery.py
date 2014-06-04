@@ -4,8 +4,10 @@
 import select
 import socket
 import pybonjour
+import threading
+import time
 
-def mdns_lookup(requestedname="oven", regtype="_iotoy._tcp", suffix=".local."):
+def mdns_lookup(requestedname="testhosttiny", regtype="_iotoy._tcp", suffix=".local."):
     requestedfullname = requestedname + "." + regtype + suffix
 
     timeout = 1
@@ -118,4 +120,50 @@ def mdns_lookup(requestedname="oven", regtype="_iotoy._tcp", suffix=".local."):
     else:
         raise Exception("Fail!")
 
+####################################
+#
+# Advertise webservices over mDNS
+#
+####################################
+class IOTWebService(threading.Thread):
+    daemon = True
 
+    def __init__(self, name="testhosttiny", regtype="_iotoy._tcp", port=5000):
+        threading.Thread.__init__(self)
+        self.name = name
+        self.regtype = regtype
+        self.port = port
+        if port != 5000:
+            self.name += str(port - 5000)
+        self.sdRef = None
+        self.ready = False
+
+    def callback(self, sdRef, flags, errorCode, name, regtype, domain):
+        print sdRef, flags, errorCode, name, regtype, domain
+        if errorCode == pybonjour.kDNSServiceErr_NoError:
+            print 'Registered service:'
+            print '  name    =', name
+            print '  regtype =', regtype
+            print '  domain  =', domain
+        self.ready = True
+
+    def run(self):
+        self.sdRef = sdRef = pybonjour.DNSServiceRegister(
+                                                name=self.name,
+                                                regtype=self.regtype,
+                                                port=self.port,
+                                                callBack=self.callback)
+        try:
+            try:
+                while True:
+                    ready = select.select([sdRef], [], [])
+                    if sdRef in ready[0]:
+                        pybonjour.DNSServiceProcessResult(self.sdRef)
+            except KeyboardInterrupt:
+                pass
+        finally:
+            sdRef.close()
+
+    def wait_advertised(self):
+        while not self.ready:
+            time.sleep(0.01)
