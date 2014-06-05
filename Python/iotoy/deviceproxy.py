@@ -147,10 +147,10 @@ class DeviceProxy(object):
                 attrtype = attrsig[:attrsig.find(" - ")]
 
                 self.attrs[name]["help"] = attrhelp
-                print "attr", name, "assert", self.attrs[name]["type"], "==", attrtype
+                # print "attr", name, "assert", self.attrs[name]["type"], "==", attrtype
                 assert self.attrs[name]["type"] == attrtype
 
-            print "attrsig", name, attrsig
+            # print "attrsig", name, attrsig
             #self.configure_func(name, funcsig)
 
     def __getattribute__(self, name):

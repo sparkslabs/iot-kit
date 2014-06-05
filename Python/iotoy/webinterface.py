@@ -33,7 +33,7 @@ class DeviceWebInterface(threading.Thread):
 
     def run(self):
         self.devinfo = self.thing.devinfo()
-        print self.thing
+        # print self.thing
         self.app = app = flask.Flask(__name__)
 
         # Add the routes and methods for handling attributes
@@ -129,7 +129,7 @@ class DeviceWebInterface(threading.Thread):
 
                     return "FUNC FAILED!"
                 except Exception as e:
-                    print "FAILURE!"
+                    # print "FAILURE!"
                     traceback.print_exc()
                     return "FUNC *DIED* !" + repr(e)
 

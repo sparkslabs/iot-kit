@@ -24,7 +24,7 @@ def mdns_lookup(requestedname="testhosttiny", regtype="_iotoy._tcp", suffix=".lo
                                       errorCode, fullname, rrtype,
                                       rrclass, rdata, ttl):
         if errorCode == pybonjour.kDNSServiceErr_NoError:
-            print '  IP         =', socket.inet_ntoa(rdata)
+            # print '  IP         =', socket.inet_ntoa(rdata)
             queried.append(socket.inet_ntoa(rdata))
 
     def LOOKUP__resolve_callback(sdRef, flags, interfaceIndex,
@@ -33,10 +33,10 @@ def mdns_lookup(requestedname="testhosttiny", regtype="_iotoy._tcp", suffix=".lo
         if errorCode != pybonjour.kDNSServiceErr_NoError:
             return
 
-        print 'Resolved service:'
-        print '  fullname   =', fullname
-        print '  hosttarget =', hosttarget
-        print '  port       =', port
+        # print 'Resolved service:'
+        # print '  fullname   =', fullname
+        # print '  hosttarget =', hosttarget
+        # print '  port       =', port
 
         lookup = [fullname, hosttarget, port]
         #FIXME
@@ -59,8 +59,8 @@ def mdns_lookup(requestedname="testhosttiny", regtype="_iotoy._tcp", suffix=".lo
                 # If we didn't do this we'd have to do a time based
                 # thing instead, which may be more appropriate
                 if fullname == requestedfullname:
-                    print fullname
-                    print requestedfullname
+                    # print fullname
+                    # print requestedfullname
                     lookup.append(IP)
                     results.append(lookup)
         finally:
@@ -75,10 +75,10 @@ def mdns_lookup(requestedname="testhosttiny", regtype="_iotoy._tcp", suffix=".lo
             return
 
         if not (flags & pybonjour.kDNSServiceFlagsAdd):
-            print 'Service removed'
+            # print 'Service removed'
             return
 
-        print 'Service added; resolving'
+        # print 'Service added; resolving'
 
         resolve_sdRef = pybonjour.DNSServiceResolve(0,
                                                     interfaceIndex,
@@ -113,7 +113,7 @@ def mdns_lookup(requestedname="testhosttiny", regtype="_iotoy._tcp", suffix=".lo
                     raise Exception("Main Fail - means not found,"
                                     "let alone resolvable or queryable")
                 if len(results) > 0:
-                    print results
+                    # print results
                     break
         except KeyboardInterrupt:
             pass
@@ -144,12 +144,12 @@ class IOTWebService(threading.Thread):
         self.ready = False
 
     def callback(self, sdRef, flags, errorCode, name, regtype, domain):
-        print sdRef, flags, errorCode, name, regtype, domain
-        if errorCode == pybonjour.kDNSServiceErr_NoError:
-            print 'Registered service:'
-            print '  name    =', name
-            print '  regtype =', regtype
-            print '  domain  =', domain
+        # print sdRef, flags, errorCode, name, regtype, domain
+        # if errorCode == pybonjour.kDNSServiceErr_NoError:
+            # print 'Registered service:'
+            # print '  name    =', name
+            # print '  regtype =', regtype
+            # print '  domain  =', domain
         self.ready = True
 
     def run(self):
