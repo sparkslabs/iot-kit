@@ -22,7 +22,7 @@ public:
   ~TestHost() { }
 
   const char *hostid() { 
-    return "sumobot";
+    return "testhosttiny";
   }
 
   const char * attrs() {
