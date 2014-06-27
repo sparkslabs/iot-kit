@@ -1,3 +1,1 @@
-echo "Adding iotoy user"
-sudo useradd iotoy --system --no-create-home  --home-dir /nonexistent
-echo "done"
+

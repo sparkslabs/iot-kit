@@ -1,17 +1,24 @@
 #!/usr/bin/python
 
 import sys
+from iotoy.discovery import find_device
 
 mod = sys.__class__
 def greet(greeting="Hello World"):
    print greeting
 
-#class AutoLoad(object):
 class AutoLoad(mod):
     """This module is actually replaced by an Autoload class at startup.
 
-    The reason for this is allow a user to have a means of querying the local network
-    in a slightly more interesting way than they might otherwise"""
+    This allows us to ask this module to automatically find devices on the local network
+    It can be used like this:
+    
+    from iotoy.local import sumobot
+    
+    sumobot.forward()
+    
+    etc
+    """
 
     def __init__(self, mod_name):
         super(AutoLoad, self).__init__("home")
@@ -21,9 +28,8 @@ class AutoLoad(mod):
         try:
             return getattr(self.wrapped, name)
         except AttributeError:
-            def f():
-                greet(name + " " + self.wrapped_name)
-            return f
+            device = find_device(name)
+            return device
 
 if __name__ == "__main__":
     pass
