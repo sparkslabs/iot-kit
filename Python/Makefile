@@ -21,7 +21,8 @@ buildrpm:
 deb:
 	debuild -uc -us
 
-use:
+use: deb
+	sudo dpkg --purge python-iotoy
 	sudo dpkg -i ../python-iotoy_*.deb
 
 clean:

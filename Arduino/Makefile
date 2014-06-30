@@ -11,18 +11,18 @@ clean:
 cleanslate:
 	rm -f ../arduino-iotoy_*.deb ../arduino-iotoy_*.dsc ../arduino-iotoy_*.build ../arduino-iotoy_*.changes ../arduino-iotoy_*.tar.gz IOToy.zip
 	dh_clean
-	dpkg --purge arduino-iotoy
+	sudo dpkg --purge arduino-iotoy
 
 deb:
 	debuild -uc -us
 
-use:
-	dpkg -i ../arduino-iotoy_*.deb
+use: deb
+	sudo dpkg -i ../arduino-iotoy_*.deb
 
-reuse:
-	dpkg --purge arduino-iotoy
+reuse: deb
+	sudo dpkg --purge arduino-iotoy
 	debuild -uc -us
-	dpkg -i ../arduino-iotoy_*.deb
+	sudo dpkg -i ../arduino-iotoy_*.deb
 
 package:
 	@echo "Make a zip file suitable for use with Windows/Mac"

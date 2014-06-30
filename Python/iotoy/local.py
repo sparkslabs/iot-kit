@@ -12,11 +12,11 @@ class AutoLoad(mod):
 
     This allows us to ask this module to automatically find devices on the local network
     It can be used like this:
-    
+
     from iotoy.local import sumobot
-    
+
     sumobot.forward()
-    
+
     etc
     """
 
