@@ -1,6 +1,52 @@
 #!/usr/bin/python
 
 import os, select, time, pprint
+import serial
+
+class serial_io(object):
+    serialport = '/dev/ttyUSB2'
+    baudrate = 9600
+    def __init__(self, serialport=None, baudrate=None, dotimeout=True):
+        if serialport:
+            self.serialport = serialport
+        if baudrate:
+            self.baudrate = baudrate
+        self.ser = serial.Serial(self.serialport, self.baudrate, timeout=1)
+        self.ser.setTimeout(2)
+        self.dotimeout = dotimeout
+        self.inbuffer =  ""
+    #
+    def recv(self):
+        acttime = time.time()
+        while True:
+            if time.time() - acttime > 2:
+                if self.dotimeout:
+                    raise Exception("timeout_waiting")
+            if self.ser.inWaiting() >0:
+                c = self.ser.read()
+                if c:
+                    acttime = time.time()
+                    self.inbuffer += c
+                    while self.inbuffer.find("\r\n") != -1:
+                        chopped_line = self.inbuffer[:self.inbuffer.find("\r\n")]
+                        self.inbuffer = self.inbuffer[self.inbuffer.find("\r\n")+2:]
+                        return chopped_line
+                else:
+                    if self.dotimeout:
+                        raise Exception("timeout_character")
+    #
+    def send(self, data, newline=True):
+        self.ser.write(data)
+        if newline:
+            self.ser.write("\n")
+    #
+    def send_recv(self, data):
+        self.send(data)
+        return self.recv()
+    #
+    def call(self, data):
+        result = self.send_recv(data)
+        return parse_hostline(result)
 
 def parse_hostline(hostline):
     assert (hostline[-1] == "\n")
