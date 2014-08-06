@@ -17,7 +17,7 @@ public:
   ~CommandHostTiny() {}
 
   virtual const char *hostid();
-  virtual const char *help(char * name);
+  virtual void help(char * name);
   virtual const char * attrs();
   virtual const char * funcs();
   virtual bool exists(char * attribute);

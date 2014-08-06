@@ -1,0 +1,41 @@
+all: TestHostStdio
+	@echo "This is a basic makefile, it has two main build targets"
+	@echo
+	@echo "tiny - A build target to test a version of the code for Atmeta 8A also known as ATiny"
+	@echo
+	@echo 
+
+TestHostTiny:
+	rm -f *.o TestHostTiny
+	rm -rf build-mock
+	mkdir build-mock
+	cp TestHostTiny.ino build-mock
+	cp ../../*cpp ../../*h build-mock
+	cp -R ../../../../mock_arduino/ build-mock
+	sed -i "s/%INOFILE%/TestHostTiny.ino/g" build-mock/mock_arduino/host_test.cpp
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c CommandHostTiny.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/MockString.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/MockSerial.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/Arduino.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY -c mock_arduino/host_test.cpp )
+	( cd build-mock ; g++  -I. -I./mock_arduino/ -DTINY host_test.o CommandHostTiny.o MockString.o MockSerial.o Arduino.o -o TestHostTiny )
+
+TestHostStdio:
+	rm -f *.o TestHostStdio
+	rm -rf build-stdio
+	mkdir build-stdio
+	cp TestHostTiny.ino build-stdio
+	cp ../../*cpp ../../*h build-stdio
+	cp -R ../../../../mock_arduino/ build-stdio
+	sed -i "s/%INOFILE%/TestHostTiny.ino/g" build-stdio/mock_arduino/stdio_host.cpp
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c CommandHostTiny.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/MockString.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/StdioMockSerial.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/Arduino.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY -c mock_arduino/stdio_host.cpp )
+	( cd build-stdio ; g++ -DSTDIOMOCKSERIAL -I. -I./mock_arduino/ -DTINY stdio_host.o CommandHostTiny.o MockString.o StdioMockSerial.o Arduino.o -o TestHostStdio )
+
+
+clean:
+	rm -f *.o TestHostTiny TestHostStdio
+	rm -rf build-mock build-stdio

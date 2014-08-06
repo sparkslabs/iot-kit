@@ -25,12 +25,12 @@ public:
     if (strcmp(name,"off")==0) return true;
     return false;
   }
-  const char *help(char * name) {
-    if (strcmp(name,"temperature")==0) return "Current temperature of the oven.";
-    if (strcmp(name,"target_temperature")==0) return "Target temperature of the oven.";
-    if (strcmp(name,"on")==0) return "Function that turns the oven on";
-    if (strcmp(name,"off")==0) return "Function that turns the oven off";
-    return "-";
+  void help(char * name) {
+    if (strcmp(name,"temperature")==0) Serial.println(F("Current temperature of the oven."));
+    if (strcmp(name,"target_temperature")==0) Serial.println(F("Target temperature of the oven."));
+    if (strcmp(name,"on")==0) Serial.println(F("Function that turns the oven on"));
+    if (strcmp(name,"off")==0) Serial.println(F("Function that turns the oven off"));
+    Serial.println(F("-"));
   }
   bool exists(char * attribute) {
     if (strcmp(attribute,"temperature")==0) return true;

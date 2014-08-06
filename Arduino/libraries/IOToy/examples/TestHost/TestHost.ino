@@ -171,7 +171,7 @@ public:
     if (strcmp(funcname,"no_arg_result_T")==0) { no_arg_result_T(); return 200; }
     if (strcmp(funcname,"one_arg_int_result_int")==0)  { one_arg_int_result_int(raw_args); return 200; }
 
-    return 200;
+    return 404;
   }
 
   void setup(void) {

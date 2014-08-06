@@ -2,8 +2,8 @@
 #include <CommandHostTiny.h>
 #include <Arduino.h>
 
-  const char * CommandHostTiny::hostid() { return "generic_1"; }
-  const char * CommandHostTiny::help(char * name) { return ""; }
+  const char * CommandHostTiny::hostid() { return "iotoy_1"; }
+  void CommandHostTiny::help(char * name) {  }
   const char * CommandHostTiny::attrs() { return ""; }
   const char * CommandHostTiny::funcs() { return ""; }
   bool CommandHostTiny::exists(char * attribute) { return false; }
@@ -126,9 +126,8 @@
           Serial.println(value);
         }
         else if (has_help(args)) {
-          const char * value = help(args);
           Serial.print(F("200:Help found:"));
-          Serial.println(value);
+          help(args); // Prints the help - maybe not the best option. Best for the moment.
         }
         else {
           Serial.print(F("404:No help found:"));
@@ -186,7 +185,7 @@
         if (strcmp(result_string,"")==0) {
             Serial.println(F("-"));
         } else {
-            Serial.println(F(result_string));
+            Serial.println(result_string);
         }
         return;
       }
@@ -205,7 +204,7 @@
           if (strcmp(result_string,"")==0) {
               Serial.println(F("-"));
           } else {
-              Serial.println(F(result_string));
+              Serial.println(result_string);
           }
           return;
         }
