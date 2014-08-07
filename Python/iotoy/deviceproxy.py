@@ -6,11 +6,14 @@ import serial
 class serial_io(object):
     serialport = '/dev/ttyUSB2'
     baudrate = 9600
-    def __init__(self, serialport=None, baudrate=None, dotimeout=True):
+    debug = False
+    def __init__(self, serialport=None, baudrate=None, dotimeout=True, debug=False):
         if serialport:
             self.serialport = serialport
         if baudrate:
             self.baudrate = baudrate
+        if debug:
+            self.debug = debug
         self.ser = serial.Serial(self.serialport, self.baudrate, timeout=1)
         self.ser.setTimeout(2)
         self.dotimeout = dotimeout
@@ -30,14 +33,14 @@ class serial_io(object):
                     while self.inbuffer.find("\r\n") != -1:
                         chopped_line = self.inbuffer[:self.inbuffer.find("\r\n")] + "\n"
                         self.inbuffer = self.inbuffer[self.inbuffer.find("\r\n")+2:]
-                        print ">>", repr(chopped_line)
+                        if self.debug: print ">>", repr(chopped_line)
                         return chopped_line
                 else:
                     if self.dotimeout:
                         raise Exception("timeout_character")
     #
     def send(self, data, newline=True):
-        print "<<", repr(data)
+        if self.debug: print "<<", repr(data)
         self.ser.write(data)
         if newline:
             self.ser.write("\n")
