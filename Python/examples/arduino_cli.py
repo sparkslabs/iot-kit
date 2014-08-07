@@ -5,7 +5,7 @@ from iotoy.deviceproxy import serial_io
 import time
 import sys
 
-port = serial_io("/dev/ttyUSB2", 9600)
+port = serial_io("/dev/ttyUSB4", 19200)
 for i in "wait":
     sys.stdout.write(".")
     sys.stdout.flush()
@@ -16,7 +16,7 @@ sys.stdout.flush()
 try:
     startline = port.recv()
 except:
-    pass
+    print "Initialisation failed badly"
 else:
     print "Arduino CLI V0.0 (Aug 2014)"
     print "Connected to /dev/ttyUSB2"
