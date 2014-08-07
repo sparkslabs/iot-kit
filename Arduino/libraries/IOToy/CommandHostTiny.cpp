@@ -223,7 +223,7 @@
   }
 
   void CommandHostTiny::setup() {
-      Serial.begin(9600);    // Data rate should be configurable
+      Serial.begin(19200);    // Data rate should be configurable
       Serial.print(F("200:DEV READY:"));
       Serial.println( hostid()); // Name of the device. May or may note be used on the network verbatim
       // Ideally also want a sufficiently unique id here.
