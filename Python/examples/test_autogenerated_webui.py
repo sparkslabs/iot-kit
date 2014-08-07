@@ -81,11 +81,11 @@ result = json.loads(response.content)
 assert result["value"] == 0.0
 assert result["type"] == "iotoy.org/types/float"
 
-response = requests.put("http://127.0.0.1:5000/ratio", data=str(3.1459))
+response = requests.put("http://127.0.0.1:5000/ratio", data=str(3.145))
 assert response.status_code == 200
 assert response.headers.get("content-type", None) == "application/json"
 result = json.loads(response.content)
-assert result["value"] == 3.1459
+assert result["value"] == 3.145
 assert result["type"] == "iotoy.org/types/float"
 
 response = requests.get("http://127.0.0.1:5000/some_flag")    # {'type': 'bool'}

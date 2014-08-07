@@ -110,8 +110,8 @@ public:
     if (strcmp(attribute,"str_id")==0) {
       return str_id;
     }
-    if (strcmp(attribute,"ratio")==0) { 
-      snprintf(temp_str,128,"%f",ratio);
+    if (strcmp(attribute,"ratio")==0) {
+      ftoa(temp_str, ratio);
       return temp_str; 
     }
     if (strcmp(attribute,"some_flag")==0) { 

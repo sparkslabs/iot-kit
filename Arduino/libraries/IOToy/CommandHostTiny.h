@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+void ftoa(char *dest , double some_float);
+
 class CommandHostTiny {
   bool have_line;
   int line_length;

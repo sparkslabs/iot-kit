@@ -2,6 +2,17 @@
 #include <CommandHostTiny.h>
 #include <Arduino.h>
 
+void ftoa(char *dest , double some_float) {
+  int wholepart = int(some_float);
+  double fractional_part = some_float - double(wholepart);
+  int fractional_asint = int(fractional_part*1000+0.5);
+  itoa (wholepart, dest, 10);
+  while (*dest != 0) dest++;
+  *dest = '.';
+  dest++;
+  itoa (fractional_asint, dest, 10);
+}
+
   const char * CommandHostTiny::hostid() { return "iotoy_1"; }
   void CommandHostTiny::help(char * name) {  }
   const char * CommandHostTiny::attrs() { return ""; }
