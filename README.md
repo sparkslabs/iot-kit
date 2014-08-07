@@ -21,7 +21,7 @@ Once you've done that being able to do the minimum to allow it to be
 controlled using high level python code over a local network connection
 doing something like this:
 
-    from home import robot
+    from iotoy.local import robot
 
     ON = 1
     robot.forward()
@@ -30,6 +30,128 @@ doing something like this:
        robot.forward()
 
     print robot.sensor.__doc__
+
+At present there isn't a (complete) robot example (Boo!) - though this is coming.
+However, the testhost is fully implemented,  meaning you can plug in a device to
+the server host. Then on that machine do this:
+
+    michael@home:~/Development/iotoy/Python/examples$ ./webhost_for_arduino_device.py
+
+That the communicates with the device, finds out what it does and create the
+RESTful web service. You can then do this:
+
+    michael@wizard:~$ python
+    Python 2.7.6 (default, Mar 22 2014, 22:59:56) 
+    [GCC 4.8.2] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> from iotoy.local import testhosttiny
+    >>> testhosttiny
+    <iotoy.discovery.testhosttiny object at 0x7f7add452350>
+    >>> help(testhosttiny)
+    { Screen shows help from the introspected device }
+    >>> pprint.pprint(testhosttiny.devinfo)
+    {u'attrs': {u'drive_forward_time_ms': {u'help': u'How long to move forward',
+                                           u'href': u'/drive_forward_time_ms',
+                                           u'type': u'int'},
+                u'ratio': {u'help': u'Sample float attribute',
+                           u'href': u'/ratio',
+                           u'type': u'float'},
+                u'some_flag': {u'help': u'Sample bool attribute',
+                               u'href': u'/some_flag',
+                               u'type': u'bool'},
+                u'str_id': {u'help': u'Sample str attribute',
+                            u'href': u'/str_id',
+                            u'type': u'str'},
+                u'turn_time_ms': {u'help': u'How long to turn',
+                                  u'href': u'/turn_time_ms',
+                                  u'type': u'int'}},
+     u'devicename': u'testhosttiny',
+     u'funcs': {u'barecommand': {u'help': u'test, basic command, no arg/result',
+                                 u'href': u'/barecommand',
+                                 u'type': 'iotoy.org/types/function',
+                                 u'value': {u'name': u'barecommand',
+                                            u'spec': {u'args': [],
+                                                      u'result': []}}},
+                u'no_arg_result_T': {u'help': u'test, one arg, generic type',
+                                     u'href': u'/no_arg_result_T',
+                                     u'type': 'iotoy.org/types/function',
+                                     u'value': {u'name': u'no_arg_result_T',
+                                                u'spec': {u'args': [],
+                                                          u'result': [[u'result',
+                                                                       u'T']]}}},
+                u'no_arg_result_bool': {u'help': u'test, one arg, boolean',
+                                        u'href': u'/no_arg_result_bool',
+                                        u'type': 'iotoy.org/types/function',
+                                        u'value': {u'name': u'no_arg_result_bool',
+                                                   u'spec': {u'args': [],
+                                                             u'result': [[u'result',
+                                                                          u'bool']]}}},
+                u'no_arg_result_float': {u'help': u'test, one arg, float',
+                                         u'href': u'/no_arg_result_float',
+                                         u'type': 'iotoy.org/types/function',
+                                         u'value': {u'name': u'no_arg_result_float',
+                                                    u'spec': {u'args': [],
+                                                              u'result': [[u'result',
+                                                                           u'float']]}}},
+                u'no_arg_result_int': {u'help': u'test, one arg, integer',
+                                       u'href': u'/no_arg_result_int',
+                                       u'type': 'iotoy.org/types/function',
+                                       u'value': {u'name': u'no_arg_result_int',
+                                                  u'spec': {u'args': [],
+                                                            u'result': [[u'result',
+                                                                         u'int']]}}},
+                u'no_arg_result_str': {u'help': u'test, one arg, string',
+                                       u'href': u'/no_arg_result_str',
+                                       u'type': 'iotoy.org/types/function',
+                                       u'value': {u'name': u'no_arg_result_str',
+                                                  u'spec': {u'args': [],
+                                                            u'result': [[u'result',
+                                                                         u'str']]}}},
+                u'one_arg_T': {u'help': u'test, one arg, generic type',
+                               u'href': u'/one_arg_T',
+                               u'type': 'iotoy.org/types/function',
+                               u'value': {u'name': u'one_arg_T',
+                                          u'spec': {u'args': [[u'attr', u'T']],
+                                                    u'result': []}}},
+                u'one_arg_bool': {u'help': u'test, one arg, boolean',
+                                  u'href': u'/one_arg_bool',
+                                  u'type': 'iotoy.org/types/function',
+                                  u'value': {u'name': u'one_arg_bool',
+                                             u'spec': {u'args': [[u'myarg',
+                                                                  u'bool']],
+                                                       u'result': []}}},
+                u'one_arg_float': {u'help': u'test, one arg, float',
+                                   u'href': u'/one_arg_float',
+                                   u'type': 'iotoy.org/types/function',
+                                   u'value': {u'name': u'one_arg_float',
+                                              u'spec': {u'args': [[u'myarg',
+                                                                   u'float']],
+                                                        u'result': []}}},
+                u'one_arg_int': {u'help': u'test, one arg, integer',
+                                 u'href': u'/one_arg_int',
+                                 u'type': 'iotoy.org/types/function',
+                                 u'value': {u'name': u'one_arg_int',
+                                            u'spec': {u'args': [[u'myarg',
+                                                                 u'int']],
+                                                      u'result': []}}},
+                u'one_arg_int_result_int': {u'help': u'test, one arg, one result, both ints',
+                                            u'href': u'/one_arg_int_result_int',
+                                            u'type': 'iotoy.org/types/function',
+                                            u'value': {u'name': u'one_arg_int_result_int',
+                                                       u'spec': {u'args': [[u'myarg',
+                                                                            u'int']],
+                                                                 u'result': [[u'result',
+                                                                              u'int']]}}},
+                u'one_arg_str': {u'help': u'test, one arg, string',
+                                 u'href': u'/one_arg_str',
+                                 u'type': 'iotoy.org/types/function',
+                                 u'value': {u'name': u'one_arg_str',
+                                            u'spec': {u'args': [[u'myarg',
+                                                                 u'str']],
+                                                      u'result': []}}}}}
+
+This API is entirely derived from the device itself. Various parts of automation
+and similar are coming.
 
 ### Linguistic mapping of REST ###
 
