@@ -8,6 +8,7 @@ import threading
 import time
 import json
 import requests
+import pprint
 
 class DeviceError(Exception):
     pass
@@ -174,7 +175,7 @@ class IOTWebService(threading.Thread):
             time.sleep(0.01)
 
 
-def find_device(devicename):
+def find_device(devicename, debug=False):
     services = mdns_lookup(requestedname=devicename,
                            regtype="_iotoy._tcp",
                            suffix=".local.")
@@ -231,8 +232,9 @@ def find_device(devicename):
             self._make_attributes()
             self._make_functions()
 
-        def __init__(self, device_name):
+        def __init__(self, device_name, debug=False):
             self.device_name = device_name
+            self.debug = debug
 
         def _make_attributes(self):
             for attr in self.devinfo["attrs"]:
@@ -241,13 +243,19 @@ def find_device(devicename):
                     assert result.status_code == 200
                     assert result.headers.get("content-type", None) == "application/json"
                     raw_json = json.loads(result.content)
+                    if self.debug:
+                        print "GET ATTR", attr, pprint.pformat(raw_json)
                     return raw_json["value"]
 
                 def put_attr(self,value, attr=attr):
+                    if self.debug:
+                        print "PUT ATTR", attr, pprint.pformat(attr)
                     response = requests.put(self.service + "/" + attr, data=str(value))
                     assert response.status_code == 200
                     assert response.headers.get("content-type", None) == "application/json"
                     raw_json = json.loads(response.content)
+                    if debug:
+                        print "PUT RESPONSE", attr, pprint.pformat(raw_json)
                     return raw_json["value"]
 
                 setattr(self.__class__,attr,property(get_attr,put_attr, None,self.devinfo["attrs"][attr]["help"]))
@@ -271,6 +279,9 @@ def find_device(devicename):
                         assert response.status_code == 200
                         assert response.headers.get("content-type", None) == "application/json"
                         raw_json = json.loads(response.content)
+                        if self.debug:
+                            print "CALLFUNC NO ARGS : POST", self.service + "/" + func_name, "DATA:", repr("")
+                            print "RESPONSE", pprint.pformat(raw_json)
                         return raw_json["value"]
 
                 elif len(funcspec["value"]["spec"]["args"]) == 1:
@@ -280,6 +291,9 @@ def find_device(devicename):
                         assert response.status_code == 200
                         assert response.headers.get("content-type", None) == "application/json"
                         raw_json = json.loads(response.content)
+                        if self.debug:
+                            print "CALLFUNC ONE ARG : POST", self.service + "/" + func_name, "DATA:", repr(str(arg))
+                            print "RESPONSE", pprint.pformat(raw_json)
                         return raw_json["value"]
                 else:
                     raise DeviceError("Device handles functions with >1 arg, we don't")
@@ -289,6 +303,6 @@ def find_device(devicename):
                 setattr(self.__class__,func,handle_func)
 
     ClientsideProxy.__name__ = devicename
-    client = ClientsideProxy(devicename)
+    client = ClientsideProxy(devicename, debug)
     client._configure(config)
     return client
