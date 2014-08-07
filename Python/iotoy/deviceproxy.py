@@ -28,14 +28,16 @@ class serial_io(object):
                     acttime = time.time()
                     self.inbuffer += c
                     while self.inbuffer.find("\r\n") != -1:
-                        chopped_line = self.inbuffer[:self.inbuffer.find("\r\n")]
+                        chopped_line = self.inbuffer[:self.inbuffer.find("\r\n")] + "\n"
                         self.inbuffer = self.inbuffer[self.inbuffer.find("\r\n")+2:]
+                        print ">>", repr(chopped_line)
                         return chopped_line
                 else:
                     if self.dotimeout:
                         raise Exception("timeout_character")
     #
     def send(self, data, newline=True):
+        print "<<", repr(data)
         self.ser.write(data)
         if newline:
             self.ser.write("\n")
