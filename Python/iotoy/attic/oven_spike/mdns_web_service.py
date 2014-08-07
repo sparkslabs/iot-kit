@@ -8,9 +8,12 @@ from flask import jsonify, make_response, request
 import pybonjour
 
 # Make available to the user of this spike file.
-from iotoy.value_types import IOTOY_INT, IOTOY_DIR, IOTOY_OBJ, IOTOY_EXCEPTION, IOTOY_METHOD
 from iotoy.utils import http_debug
 from iotoy.webinterface import WebInterface
+
+# Make available from this file
+
+from .value_types import IOTOY_INT, IOTOY_DIR, IOTOY_OBJ, IOTOY_EXCEPTION, IOTOY_METHOD
 
 ######################################################################
 #

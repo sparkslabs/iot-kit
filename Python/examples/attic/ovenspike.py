@@ -4,7 +4,7 @@ import os
 import logging
 import time
 import sys
-from iotoy.oven_spike import *
+from iotoy.attic.oven_spike import *
 from iotoy.dummyserial import mkserial
 
 #############################################################################################

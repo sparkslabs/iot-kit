@@ -4,7 +4,7 @@ import json
 import requests
 
 # Make available to the user of this spike file.
-from iotoy.value_types import IOTOY_INT, IOTOY_DIR, IOTOY_OBJ, IOTOY_EXCEPTION, IOTOY_METHOD
+from .value_types import IOTOY_INT, IOTOY_DIR, IOTOY_OBJ, IOTOY_EXCEPTION, IOTOY_METHOD
 from iotoy.utils import props
 from iotoy.discovery import mdns_lookup
 
