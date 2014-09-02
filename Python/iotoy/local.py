@@ -4,8 +4,6 @@ import sys
 from iotoy.discovery import find_device
 
 mod = sys.__class__
-def greet(greeting="Hello World"):
-   print greeting
 
 class AutoLoad(mod):
     """This module is actually replaced by an Autoload class at startup.
