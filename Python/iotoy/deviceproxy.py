@@ -3,6 +3,9 @@
 import os, select, time, pprint
 import serial
 
+class TimeoutException(Exception):
+    pass
+
 class serial_io(object):
     serialport = '/dev/ttyUSB2'
     baudrate = 9600
@@ -24,7 +27,7 @@ class serial_io(object):
         while True:
             if time.time() - acttime > 2:
                 if self.dotimeout:
-                    raise Exception("timeout_waiting")
+                    raise TimeoutException("timeout_waiting")
             if self.ser.inWaiting() >0:
                 c = self.ser.read()
                 if c:
@@ -37,7 +40,7 @@ class serial_io(object):
                         return chopped_line
                 else:
                     if self.dotimeout:
-                        raise Exception("timeout_character")
+                        raise TimeoutException("timeout_character")
     #
     def send(self, data, newline=True):
         if self.debug: print "<<", repr(data)
@@ -118,10 +121,12 @@ class DeviceProxy(object):
         del self.funcs["get"]
 
     def configure_attrlist(self, attrlist):
-        attrnames = attrlist.split(",")
-        for attr in attrnames:
-            name, typespec = attr.split(":")
-            self.attrs[name] = { "type": typespec }
+        if attrlist != "":
+            attrnames = attrlist.split(",")
+            for attr in attrnames:
+                print attr
+                name, typespec = attr.split(":")
+                self.attrs[name] = { "type": typespec }
 
     def configure_func(self, name, funcsig):
         funcname = funcsig[:funcsig.find(" ")]
@@ -175,7 +180,18 @@ class DeviceProxy(object):
                 "attrs" : self.attrs}
 
     def introspect_device(self):
-        startline = self.device.recv() # Initial startline may fail - eg device was connected some time beforehand
+        fails = 0
+        while True: # Workaround for Leonardo devices that don't always reset on connection of serial
+            try:
+                startline = self.device.recv() # Initial startline may fail - eg device was connected some time beforehand
+                break
+            except TimeoutException as e:
+                if fails == 0:
+                    fails += 1
+                    self.device.send("devinfo")
+                else:
+                    raise
+            
         code, message, data = parse_hostline(startline)
 
         if code == 200:
