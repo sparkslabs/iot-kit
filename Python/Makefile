@@ -30,5 +30,5 @@ clean:
 	dh_clean
 	rm -rf build/ MANIFEST
 	find . -name '*.pyc' -delete
-	rm ../python-iotoy_*.dsc ../python-iotoy_*.tar.gz ../python-iotoy_*.deb ../python-iotoy_*.build ../python-iotoy_*.changes
+	rm -f ../python-iotoy_*.dsc ../python-iotoy_*.tar.gz ../python-iotoy_*.deb ../python-iotoy_*.build ../python-iotoy_*.changes
 
