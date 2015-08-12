@@ -27,11 +27,14 @@ sys.stdout.flush()
 try:
     startline = port.recv()
 except:
-    print "Initialisation failed badly"
-else:
-    print "Arduino CLI V0.0 (Aug 2014)"
-    print "Connected to", dev
-    print "To find out what the device does, type 'help'."
+    print "Type devinfo"
+    print
+    startline = ""
+
+print "Arduino CLI V0.0 (Aug 2014)"
+print "Connected to", dev
+print "To find out what the device does, type 'help'."
+if startline:
     print "Basic device info:"
     print "                  ", startline
 

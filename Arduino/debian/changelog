@@ -1,6 +1,6 @@
-arduino-iotoy (1.0.0) precise; urgency=low
+arduino-iotoy (1.0.0) trusty; urgency=low
 
   * Initial Version
 
- -- Michael Sparks <sparks.m@gmail.com>  Mon, 07 Apr 2014 19:17:58 +0100
+ -- Michael Sparks (sparkslabs) <sparks.m@gmail.com>  Mon, 07 Apr 2014 19:17:58 +0100
 

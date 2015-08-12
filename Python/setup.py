@@ -26,7 +26,7 @@ def find_packages(path, base="" ):
 packages = find_packages(".")
 package_names = packages.keys()
 
-if True:
+if False:
     print "This is a non-ideal way of checking this."
     print "This will be dealt with better soon"
     print "For the moment this is the least bad refactor"
