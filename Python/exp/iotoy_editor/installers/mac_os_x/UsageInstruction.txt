@@ -1,0 +1,19 @@
+How to use this graphical loader
+================================
+
+1. Switch off your device (if appropriate to next step)
+
+2. Switch your device on, in DFU update mode
+
+3. Confirm that your device is in DFU update mode
+   (maybe you have lights that come on)
+
+4. Hit the "program device" button:
+   - A file selector will open
+   - Find your hex file
+   - Open it
+   - Your device will now be being programmed
+
+5. Wait until programming is complete
+
+6. Unplug/restart your device
