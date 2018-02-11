@@ -16,7 +16,7 @@ title: Project Status (overview)
 * Usable for working networking devices
 * Usable for working with networked devices
 * Used in a major project (Microbit Prototype ~1000 devices deployed)
-  * See https://github.com/sparkslabs/microbit-prototype/blob/master/iot_tether/user_code.ino
+  * See <https://github.com/sparkslabs/microbit-prototype/blob/master/iot_tether/user_code.ino>
 
 (More detail and roadmap coming later)
 
