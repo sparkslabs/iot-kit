@@ -2,14 +2,14 @@
 template: mainpage
 source_form: markdown
 name: Resources, Downloads
-updated: June 2015
+updated: Feb 2018
 title: Downloads, Packages, Links, Contacts, Resources, etc
 ---
 ## Downloads, Packages, Links, Contacts
 
 ### Contact
 
-Michael Sparks : <sparks.m@gmail.com>, [blog](http://www.sparkslabs.com/michael/) [@sparks_rd](http://twitter.com/sparks_rd) [Linked in](https://www.linkedin.com/pub/michael-sparks/0/1b9/a93)
+Michael Sparks : <sparks.m@gmail.com>, [blog](http://www.sparkslabs.com/michael/) [@_sparkslabs](http://twitter.com/_sparkslabs) [Linked in](https://www.linkedin.com/pub/michael-sparks/0/1b9/a93)
 
 ### Blog posts
 
@@ -21,7 +21,7 @@ See Here:
 
 Primary site:
 
-* <https://github.com/sparkslabs/iotoy>
+* <https://github.com/sparkslabs/iot-kit/>
 
 Secondary:
 
@@ -56,5 +56,3 @@ Install the Python Libraries:
 ### Usage
 
 Use -- see examples in distribution and from inside the Arduino IDE
-
-

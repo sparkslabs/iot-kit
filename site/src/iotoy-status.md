@@ -1,13 +1,13 @@
 ---
 template: mainpage
 source_form: markdown
-name: IOToy Status
-updated: July 2015
+name: IOT-Kit Status
+updated: Feb 2018
 title: IOToy Status
 ---
-## IOToy Status
+## IOT-Kit Status
 
-The short version is that IOToy is stable, and useful.
+The short version is that IOT-Kit is stable, and useful.
 
 It has been used with SumoBots, and in the prototype [BBC Micro:bit][MICROBIT]
 
@@ -23,9 +23,8 @@ Similarly are likely to be tweaks to the serial API in future including:
   style rather than CSP.
 
 --- 
-This is a new site (as of July 2015), and the Status for IOToy will be copied over into here.
-For the moment, it's best to look at the specs on the IOToy github repo:
+More detail:
 
-* <https://github.com/sparkslabs/iotoy>
+* <https://github.com/sparkslabs/iot-kit/>
 
 [MICROBIT]: http://www.bbc.co.uk/rd/blog/2015/07/prototyping-the-bbc-microbit

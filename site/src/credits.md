@@ -2,7 +2,7 @@
 template: mainpage
 source_form: markdown
 name: Credits
-updated: July 2015
+updated: Feb 2018
 title: Credits
 ---
 ## Credits
@@ -13,8 +13,6 @@ indirectly.
 ### Directly
 
 {% michael = panel("panels/credits-michael-sparks.md") %}
-{% contrib1 = panel("panels/credits-contributor.md") %}
-{% contrib2 = panel("panels/credits-contributor.md") %}
 
 ### Indirectly / Projects used
 

@@ -1,12 +1,46 @@
 ---
 template: mainpage
 source_form: markdown
-name: IOToy Specifications
-updated: June 2015
-title: IOToy Specifications
+name: IOTOY Specifications
+updated: Feb 2018
+title: IOTOY Specifications
 ---
 
-## IOToy Specifications
+## IOTOY Specifications
+
+**Internet Of Things Of Yours** specifications are divided into the following two main areas:
+
+* **Serial API** - This is a seria communications protocl, loosely based on
+  ideas from HTTP, but aimed at being simple enough for very small devices
+  to implement.
+
+* **Web API** - A pure REST based interface. It is built entirely automatically
+  from the Serial API, and provides enough information for a python proxy
+  object to be created on a client machine.
+
+
+### Core Concepts
+
+The core concepts are:
+
+* Device introspection - I want to pick up this device and as it how it works?
+* Device as software - Using that introspection, can I automatically create a linguistic interface suitable for use in my language? The example language is python
+* Network introspection - can I find the device, connect to it and ask it how it works?
+* Network Device as software - Using that introspection, can I automatically create a linguistic interface suitable for use in my language? Again, using python
+
+There are some basic standard types available - that map to the types
+you find in many languages. Additionally a type for functions and
+exceptions exists.
+
+These types are defined within the iotoy.org/types namespace - a couple
+of examples: iotoy.org/types/int, iotoy.org/types/function
+
+(These types actually refer to real URLs that resolve, and give both
+human and machine readable versions dependent on HTTP header provided)
+
+However, an industry may choose to define their own types, and these
+can sit within their namespace. For example iot-kit/types/servo
+
 
 ### Serial API - Serial Communications Protocol
 
@@ -160,7 +194,7 @@ It should be relatively clear here that:
 
 ### Web API
 
-Status: 1.0-alpha
+Status: 1.0
 
 The web API provides a linguistic mapping of HTTP methods to a traditional programming languages.
 Python is the default language but the principles apply to many languages.

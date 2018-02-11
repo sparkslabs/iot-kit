@@ -2,8 +2,8 @@
 template: mainpage
 source_form: markdown
 name: Overview
-title: IOToy -- An IOT Stack for toys and other devices
-updated: June 2015
+title: IOT-KIT -- An IOT Stack for an Internet of Things of Yours
+updated: Feb 2018
 ---
 ## Overview
 
@@ -62,7 +62,7 @@ This API is entirely derived from the device itself, and used to automatically
 create the sort of Web API above.
 
 <pre>
-michael@wizard:~$ python
+$ python
 Python 2.7.6 (default, Mar 22 2014, 22:59:56) 
 [GCC 4.8.2] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
