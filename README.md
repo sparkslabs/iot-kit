@@ -1,5 +1,5 @@
-# IOT Kit - An IOT Tool Kit
-# Make an Internet of Things (Of Yours)
+# IOT Kit - An IOT Tool Kit For Makers
+### Make an Internet of Things (Of Yours)
 
 IOT-Kit is a collection of tools for creating and working with devices that
 can be controlled, connected to each other to form *an* Internet of Things
@@ -8,6 +8,13 @@ can be controlled, connected to each other to form *an* Internet of Things
 The system focusses on the peer-to-peer networking usecase, though there
 are wider plans. The aim is to get local networking and internetworking
 first before moving that to the next stage.
+
+It is intended to be very maker friendly:
+
+* If you can make any simple arduino device you can use IOT-Kit
+  to make it an IOT device.
+* If you can python any python, you can use any IOT-Kit  ased device.
+
 
 ## Status : Stable, Continuing Development
 
