@@ -15,6 +15,20 @@ first before moving that to the next stage.
   to make it an IOT device.
 * If you can python any python, you can use any IOT-Kit  ased device.
 
+## Tutorial?
+
+A basic overview tutorial is here:
+* <http://www.sparkslabs.com/michael/blog/2018/02/12/hello-iot-kit,-introduction-by-example>
+
+It explains how to build a simple network controllable arduino robot.
+
+It assumes you know how to use 2 continuous rotation servos + simple arduino
+to make a robot, guides you through programming a simple interaction layer,
+through to slapping on the IOT interface using IOT-Kit.
+
+OK, it's more of a guided walkthrough than a tutorial, and it misses out a
+couple of interesting bits, but it gives you a start before you delve into
+the project!
 
 ## Status : Stable, Continuing Development
 
