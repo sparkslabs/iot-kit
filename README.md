@@ -9,7 +9,7 @@ The system focusses on the peer-to-peer networking usecase, though there
 are wider plans. The aim is to get local networking and internetworking
 first before moving that to the next stage.
 
-It is intended to be very maker friendly:
+**It is intended to be very maker friendly:**
 
 * If you can make any simple arduino device you can use IOT-Kit
   to make it an IOT device.
