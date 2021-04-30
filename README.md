@@ -30,11 +30,10 @@ OK, it's more of a guided walkthrough than a tutorial, and it misses out a
 couple of interesting bits, but it gives you a start before you delve into
 the project!
 
-## Status : Stable, Continuing Development
+## Status : Stable
 
 Since of 2014, the peer-to-peer level technologies have been stable.
-As of 2018 work has restarted, with regard to implementing the higher
-layers, and tightening the existing useful specifications.
+Occasionally work is done on the higher level specs and use case ideas.
 
 ## Overview
 
